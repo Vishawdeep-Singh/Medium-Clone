@@ -51,7 +51,7 @@ export const SignUp = async (c: Context) => {
         } = await c.req.json();
 
         const hashedPassword: string = await hashPassword(body.password);
-        console.log(hashedPassword)
+    
         const response = await prisma.user.create({
             data: {
                 email: body.email,
@@ -60,7 +60,7 @@ export const SignUp = async (c: Context) => {
 
             }
         })
-        console.log(response)
+        
         if (response !== null) {
             const token = await Jwt.sign({ id: response.id }, c.env.JWT_SECRET);
             if (token !== null || token !== undefined) {
@@ -75,7 +75,7 @@ export const SignUp = async (c: Context) => {
     } catch (error) {
         return c.json({
             message: "Error in creating User" + error
-        })
+        },500)
     }
 }
 
@@ -143,7 +143,7 @@ export const SignIn = async (c: Context) => {
                         return c.json({
                             message: "Sign In successfull",
                             token: token
-                        })
+                        },200)
                     }
                 }
             }
@@ -154,13 +154,13 @@ export const SignIn = async (c: Context) => {
         else {
             return c.json({
                 message: "Either email/password is incorrect OR user does not exist"
-            })
+            },400)
         }
 
 
     } catch (error) {
         return c.json({
             message: "Either email/password is incorrect OR user does not exist" + error
-        })
+        },500)
     }
 }

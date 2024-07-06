@@ -18,23 +18,19 @@ try {
       } = await c.req.json();
     const response = SignUpSchema.safeParse(body)
     console.log(response)
-    if(response.success){
-      await next()
-           
-       
- 
-    console.log("hi");
-      
-    }
-   else{ return c.json({
-        message:response.error
-    })}
+    if (response.success) {
+        await next();
+      } else {
+        return c.json({
+          message: response.error.errors,
+        }, 400); // Return 400 status code for validation errors
+      }
   
-} catch (error:any) {
-    c.json({
-        message:error.errors
-    })
-}
+} catch (error: any) {
+    return c.json({
+      message: error.message || 'Internal Server Error',
+    }, 500); // Return 500 status code for server errors
+  }
 }
 export async function isSignInValid(c:Context,next:Next){
 try {
@@ -54,14 +50,17 @@ try {
    
       
     }
-   else{ return c.json({
-        message:response.error
-    })}
+   else{
+    console.log(response.error.errors)
+     return c.json({
+        message:response.error.errors
+        
+    },400)}
   
 } catch (error:any) {
     c.json({
-        message:error.errors
-    })
+        message: error.message || 'Internal Server Error',
+    },500)
 }
 }
 export async function isCreatePostValid(c:Context,next:Next){
@@ -145,7 +144,7 @@ try {
         // User exists, send a response and do not call next()
         return c.json({
             message: "User already exists"
-        });
+        },400);
     } else {
         // User does not exist, proceed to the next middleware
         await next();
@@ -154,8 +153,8 @@ try {
       
 } catch (error:any) {
     c.json({
-        message:"Error in finding unique user"+error.message
-    })
+        message:"Error in finding unique user"+" "+error.message
+    },500)
 }
 }
 
