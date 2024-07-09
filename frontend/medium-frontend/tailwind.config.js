@@ -5,7 +5,14 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily:{
+      body:["Bona Nova SC"]
+      },
+      backgroundImage:{
+        'hero-pattern': "url('../assets/texture.jpg')"
+      }
+    },
   },
   plugins: [],
 }
