@@ -20,6 +20,20 @@ model User {
   name     String?
   password String
   posts    Post[]
+  comments   Comment[] @relation("UserComments")
+  savedPosts Post[] @relation("SavedPosts")
+
+  // Self-referential many-to-many relationship for followers and following
+followedBy Follows[] @relation("followedBy")
+  following  Follows[] @relation("following")
+}
+model Follows {
+  followedBy   User @relation("followedBy", fields: [followedById], references: [id])
+  followedById String
+  following    User @relation("following", fields: [followingId], references: [id])
+  followingId  String
+
+  @@id([followingId, followedById])
 }
 
 model Post {
@@ -30,10 +44,25 @@ model Post {
   author    User     @relation(fields: [authorId], references: [id])
   tags Tag[]
   authorId  String
+  date       DateTime @default(now())
+  likes      Int      @default(0)
+  comments   Comment[]
+  savers     User[]   @relation("SavedPosts")
+
+
+
 }
 
 model Tag{
   id Int @id @default(autoincrement())
   tag String @unique
   post Post[]
+}
+model Comment {
+  id      String   @id @default(uuid())
+  content String
+  post    Post     @relation(fields: [postId], references: [id])
+  postId  String
+  author  User     @relation(fields: [authorId], references: [id], name: "UserComments")
+  authorId String
 }
