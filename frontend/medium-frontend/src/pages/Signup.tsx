@@ -27,6 +27,7 @@ export const Signup=()=>{
                const token:string=response.data.token;
                console.log(token)
                localStorage.setItem("token",token)
+               navigate("/blog")
 
               }
         } catch (error:any) {
@@ -57,6 +58,7 @@ email:"",
 name:"",
 password:""
     });
+    const navigate = useNavigate();
     return <div>
         <div className="grid grid-cols-2">
             <div>

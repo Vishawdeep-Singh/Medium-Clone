@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import { authMiddleware, isCreatePostValid, isUpdatePostValid } from "../middlewares/middlewares123";
-import { createBlog, getBlog, UpdateBlog } from "../controllers/blog";
+import { authMiddleware, isCreatePostValid, isPostSaved, isUpdatePostValid } from "../middlewares/middlewares123";
+import { createBlog, getBlog, getPosts, like, savePost, UpdateBlog } from "../controllers/blog";
 
 const blogRoutes = new Hono<{
     Bindings: {
@@ -11,6 +11,9 @@ const blogRoutes = new Hono<{
 
 blogRoutes.post('/',authMiddleware, isCreatePostValid ,createBlog);
 blogRoutes.put('/',authMiddleware, isUpdatePostValid ,UpdateBlog);
-blogRoutes.get('/:id',authMiddleware,getBlog)
+blogRoutes.get('/:id',authMiddleware,getBlog);
+blogRoutes.get('/',authMiddleware,getPosts)
+blogRoutes.post("/:id/like",authMiddleware,like);
+blogRoutes.post('/save',authMiddleware,isPostSaved,savePost)
 
 export default blogRoutes

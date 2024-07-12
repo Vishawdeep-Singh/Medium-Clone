@@ -46,7 +46,7 @@ model Post {
   authorId  String
   date       DateTime @default(now())
   likes      Int      @default(0)
-  comments   Comment[]
+  comments   Comment[] 
   savers     User[]   @relation("SavedPosts")
 
 

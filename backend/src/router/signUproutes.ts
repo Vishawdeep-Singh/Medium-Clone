@@ -1,8 +1,10 @@
 
 import { Hono,Context } from 'hono'
-import { isSignInValid, isSignUpValid, isUserExists } from '../middlewares/middlewares123';
+import { authMiddleware, isSignInValid, isSignUpValid, isUserExists } from '../middlewares/middlewares123';
 import {z} from "zod"
 import { SignIn, SignUp } from '../controllers/signUp';
+import { sign } from 'hono/jwt';
+import { Getuser } from '../controllers/user';
 
 
  export const signUproutes=new Hono<{
@@ -13,7 +15,8 @@ import { SignIn, SignUp } from '../controllers/signUp';
 }>();
 
 signUproutes.post('/signup', isSignUpValid,isUserExists, SignUp);
-signUproutes.post("/signin",isSignInValid,SignIn)
+signUproutes.post("/signin",isSignInValid,SignIn);
+signUproutes.get("/user",authMiddleware,Getuser)
 
   // signUproutes.post('/signin')
 

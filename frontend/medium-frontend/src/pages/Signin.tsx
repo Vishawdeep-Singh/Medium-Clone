@@ -12,10 +12,12 @@ import ErrorDisplay from "./error.tsx"
 import { LoadingSpinner } from "./LoadingSpinner.tsx"
 
 
+
 export const Signin=()=>{
    
     const [errMessages,setErrorMessages]=useState<string[] | string>([]);
     const [Loading,setLoading]=useState(false);
+    const navigate = useNavigate();
 
    
     async function handleClick() {
@@ -32,6 +34,8 @@ export const Signin=()=>{
                const token:string=response.data.token;
                console.log(token)
                localStorage.setItem("token",token)
+               navigate("/blog")
+
 
               }
         } catch (error:any) {

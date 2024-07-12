@@ -1,12 +1,38 @@
-import React from "react"
+import React, { LegacyRef, useEffect, useRef, useState } from "react"
 import image from '../assets/bitmap.png';
 import texture from '../assets/texture3.png';
 
+import { Avatar, Dropdown, Navbar } from "flowbite-react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { LoadingSpinner } from "../pages/LoadingSpinner";
 
-export const Appbar = () => {
-    return <><div className="flex justify-between  border-solid border-black h-[57px]  items-center">
+interface SavedPost {
+  id: string;
+}
+interface UserProps {
+  id: string;
+  email: string;
+  name: string;
+  savedPosts: SavedPost[]; // Adjust fields as per your schema
+}
+export const Appbar = ({ id, email, name, savedPosts }:UserProps) => {
+
+    const dropdowndiv=useRef<HTMLDivElement>(null)
+    const [dropdown,SetDropdown]=useState(false)
+    const navigate= useNavigate();
+   
+
+
+    
+
+    
+    
+    return <div><div className="flex justify-between border-solid border-black h-[57px]  items-center">
         <div className="flex items-center">
-        <div className="text-black font-body text-3xl font-extrabold ml-3 antialiased hover:subpixel-antialiased">
+        <div onClick={()=>{
+          navigate("/blog")
+        }} className=" cursor-pointer text-black font-body text-3xl font-extrabold ml-3 antialiased hover:subpixel-antialiased">
             Thought
         </div>
         <div className="flex ml-4 rounded-2xl items-center  bg-[#F9F9F9] py-2 px-5">
@@ -15,13 +41,15 @@ export const Appbar = () => {
             </svg>
 
             <div className="ml-3">
-                <input type="text" placeholder="Search" className=" focus:outline-none rounded-lg placeholder-gray-500 bg-inherit placeholder:font-thin" />
+                <input type="text" placeholder="Search" className="focus:outline-none rounded-lg placeholder-gray-500 bg-inherit placeholder:font-thin" />
             </div>
         </div>
         </div>
 
-        <div className="flex items-center w-[20%] justify-around">
-            <div className="flex items-center text-slate-600 font-medium text-sm  hover:text-black">
+        <div className="flex relative items-center w-[20%] justify-around">
+            <div onClick={()=>{
+                navigate("/new-blog")
+            }}  className=" cursor-pointer flex items-center text-slate-600 font-medium text-sm  hover:text-black">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-7">
                     
                     <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
@@ -42,10 +70,39 @@ export const Appbar = () => {
 
 
 
-            <div className="Profile">
-                <div className="rounded-full h-10 w-10 bg-black">
-
-                </div>
+            <div className="Profile relative flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+            <button onClick={()=>{
+              SetDropdown((prev)=> !prev)
+            }} type="button" className="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4  focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded={dropdown ? "true" : "false"} data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
+        <span className="sr-only">Open user menu</span>
+        <img className="w-8 h-8 rounded-full" src="https://mir-s3-cdn-cf.behance.net/project_modules/1400/1510c2139933299.62399ca03fe5c.png" alt="user photo"/>
+      </button>
+        {dropdown && <div ref={dropdowndiv} className="z-50 font-medium text-black absolute top-5  right-[-1rem] my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg border-2 border-black shadow-md dark:bg-gray-700 dark:divide-gray-600 transition-opacity duration-300 ease-in-out ">
+        <div className="px-4 py-3">
+            
+      
+   
+      <span className="block text-sm text-gray-900 dark:text-white">{name}</span>
+      <span className="block text-sm text-gray-500 truncate dark:text-gray-400">{email}</span>
+   
+        </div>
+        <ul className="py-2" aria-labelledby="user-menu-button">
+          <li>
+            <a href="#" className="block px-4 py-2 text-sm  hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Profile</a>
+          </li>
+          <li>
+            <a onClick={(e)=>{
+                e.preventDefault();
+                localStorage.removeItem("token");
+                localStorage.removeItem("fills")
+                
+                navigate("/signin")
+            }} href="" className="block px-4 py-2 text-sm  hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign Out</a>
+          </li>
+          
+        </ul>
+      </div> }    
+      
             </div>
 
 
@@ -53,8 +110,16 @@ export const Appbar = () => {
 
     </div>
 
-        <div className="bg-gradient-to-r from-zinc-50 to-zinc-950 h-10 w-[100%] overflow-hidden mix-blend-overlay">
 
+
+
+        <div className="bg-gradient-to-r from-zinc-50 to-zinc-950 h-10 w-[100%] overflow-hidden mix-blend-overlay">
+            
+
+
+
+            
         </div>
-    </>
+        </div>
+    
 }

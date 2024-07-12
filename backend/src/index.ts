@@ -14,7 +14,8 @@ const app = new Hono<{
 app.use(cors())
 
 app.route('/api/v1',signUproutes);
-app.route("/api/v1/blog",blogRoutes)
+app.route("/api/v1/blog",blogRoutes);
+
 
 
 export default app
