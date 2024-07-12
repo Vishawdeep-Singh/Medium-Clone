@@ -18,18 +18,62 @@ try {
         id:true,
         email:true,
         name:true,
-        savedPosts:{
-            select:{
-                id:true
+        posts:{
+            include:{
+                author:true
             }
-        }
+        },
+        savedPosts:{
+            include:{
+                author:true
+            }
+        },
+        
        },
+
        
     })
     return c.json(user,200)
 } catch (error:any) {
     return c.json({
         message: "Error in finding info about user" + " " + error.message
+    })
+}
+}
+export const Getanyuser=async (c:Context)=>{
+try {
+    interface Props{
+        userId:string
+    }
+    const prisma = new PrismaClient({ datasourceUrl: c.env.DATABASE_URL }).$extends(withAccelerate())
+    const {userId}:Props=await c.req.json()
+    let user = await prisma.user.findUnique({
+        where:{
+            id:userId,
+        },
+       select:{
+        id:true,
+        email:true,
+        name:true,
+        posts:{
+            include:{
+                author:true
+            }
+        },
+        savedPosts:{
+            include:{
+                author:true
+            }
+        },
+        
+       },
+
+       
+    })
+    return c.json(user,200)
+} catch (error:any) {
+    return c.json({
+        message: "Error in finding info about any user" + " " + error.message
     })
 }
 }

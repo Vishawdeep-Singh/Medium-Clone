@@ -122,9 +122,7 @@ export const BlogInfo = () => {
               if (response.status === 200) {
                 SetUser(response.data); // Assuming response.data is an array of posts
                 const savePostsIds = response.data.savedPosts;
-                const fillobj =  savePostsIds.map((post:{
-                    id:string
-                })=>{
+                const fillobj =  savePostsIds.map((post:any)=>{
                   return post.id
                 });
                 let fills:Fills ={}

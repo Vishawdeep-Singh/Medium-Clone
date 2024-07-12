@@ -105,9 +105,7 @@ const fetchUser = async()=>{
           if (response.status === 200) {
             SetUser(response.data); // Assuming response.data is an array of posts
             const savePostsIds = response.data.savedPosts;
-            const fillobj =  savePostsIds.map((post:{
-                id:string
-            })=>{
+            const fillobj =  savePostsIds.map((post:any)=>{
               return post.id
             });
             let fills:Fills ={}
@@ -117,11 +115,11 @@ const fetchUser = async()=>{
               localStorage.setItem("fills",JSON.stringify(fills))
             
           } else {
-            throw new Error(`Failed to fetch posts: ${response.statusText}`);
+            throw new Error(`Failed to fetch userInfo: ${response.statusText}`);
             setIsLoading(false)
           }
         } catch (error:any) {
-          console.error('Error fetching posts:', error.message);
+          console.error('Error fetching userInfo:', error.message);
           setIsLoading(false)
           
         }
@@ -187,7 +185,10 @@ try {
       
 }
 }
-
+ 
+const GotouserInfo = (userId:string)=>{
+navigate(`/userInfo/${userId}`)
+}
 
 
 function handleClick(postId:string){
@@ -229,11 +230,13 @@ if (isLoading) {
                     return <div key={post.id} className="h-[19rem] mx-[30px] border-y-[1px] border-[#F2F2F2] pt-10 space-y-2" >
 
 
-                    <div className="flex cursor-pointer"onClick={() => handleClick(post.id)} >
+                    <div className="flex cursor-pointer" >
                         <div className="rounded-full h-5 w-5 bg-black flex-shrink-0">
 
                         </div>
-                        <div className="text-sm font-light px-5">
+                        <div className="text-sm font-light px-5 hover:underline" onClick={()=>{
+                            GotouserInfo(post.authorId)
+                        }}>
                             {post.author.name}
                         </div>
                     </div>

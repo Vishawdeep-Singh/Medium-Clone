@@ -4,7 +4,7 @@ import { authMiddleware, isSignInValid, isSignUpValid, isUserExists } from '../m
 import {z} from "zod"
 import { SignIn, SignUp } from '../controllers/signUp';
 import { sign } from 'hono/jwt';
-import { Getuser } from '../controllers/user';
+import { Getanyuser, Getuser } from '../controllers/user';
 
 
  export const signUproutes=new Hono<{
@@ -16,7 +16,8 @@ import { Getuser } from '../controllers/user';
 
 signUproutes.post('/signup', isSignUpValid,isUserExists, SignUp);
 signUproutes.post("/signin",isSignInValid,SignIn);
-signUproutes.get("/user",authMiddleware,Getuser)
+signUproutes.get("/user",authMiddleware,Getuser);
+signUproutes.post("anyUser",authMiddleware,Getanyuser)
 
   // signUproutes.post('/signin')
 

@@ -22,7 +22,10 @@ export const Appbar = ({ id, email, name, savedPosts }:UserProps) => {
     const [dropdown,SetDropdown]=useState(false)
     const navigate= useNavigate();
    
-
+    const Gotouser=()=>{
+      const userId:string = "owner";
+      navigate(`/userInfo/${userId}`)
+    }
 
     
 
@@ -88,7 +91,7 @@ export const Appbar = ({ id, email, name, savedPosts }:UserProps) => {
         </div>
         <ul className="py-2" aria-labelledby="user-menu-button">
           <li>
-            <a href="#" className="block px-4 py-2 text-sm  hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Profile</a>
+            <a href="#" className="block px-4 py-2 text-sm  hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white" onClick={Gotouser}>Profile</a>
           </li>
           <li>
             <a onClick={(e)=>{
