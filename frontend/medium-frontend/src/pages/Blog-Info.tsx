@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom"
 import { Appbar } from "../components/Appbar"
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { LoadingSpinner } from "./LoadingSpinner";
 
@@ -36,6 +36,13 @@ export const BlogInfo = () => {
     interface Fills {
         [key: string]: string;
       }
+      interface Comments{
+        author:Author;
+        authorId:string;
+        content:string;
+        id:string;
+        postId:string
+      }
       
     const defaultPost: Post = { id: '', title: '', content: '', published: false, authorId: '', date: '', likes: 0, author: { id: '', email: '', name: '', password: '' }, tags: [], comments: [], savers: [] };
     const { postId1 } = useParams();
@@ -56,6 +63,13 @@ export const BlogInfo = () => {
     const [para, SetPara] = useState<string[]>([]);
     const [likes, SetLikes] = useState(0);
     const [animate, setAnimate] = useState(false);
+    const [commentValue,setCommentValue]=useState(false)
+    const [commentContent,setCommentContent]=useState("")
+    const [comments,setComments]=useState<Comments[]>([]);
+    const responseButton =  useRef<HTMLButtonElement | null>(null)
+    const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+    const [commentPosted,setCommentPosted]=useState(false)
+   
     const [fills,setFills]=useState<Fills>(()=>{
         const savedFills= localStorage.getItem("fills");
         return savedFills? JSON.parse(savedFills) : {}
@@ -159,9 +173,12 @@ export const BlogInfo = () => {
             console.log(response)
             if (response.status === 200) {
                 setPost(response.data);
+               
                 const paragraphs = response.data.content.split("\n");
                 SetPara(paragraphs);
                 SetLikes(response.data.likes)
+                setComments(response.data.comments)
+                
                
                 setError(null);
             } else {
@@ -211,11 +228,26 @@ export const BlogInfo = () => {
 
     useEffect(() => {
         fetchPost()
-    }, [postId])
+    }, [postId,commentPosted])
 
     useEffect(()=>{
         fetchUser()
     },[])
+
+    useEffect(()=>{
+        if(responseButton.current){
+            if(!commentValue){
+                responseButton.current.disabled=true
+            }
+            else{
+                responseButton.current.disabled=false
+            }
+        }
+        else{
+            console.error("responseButton is null")
+        }
+        
+    },[commentValue])
 
     useEffect(() => {
         const fetchData = async () => {
@@ -243,12 +275,51 @@ export const BlogInfo = () => {
         </div>
     }
 
+    const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const textarea = e.target;
+        if(textarea.value.length>0){
+            setCommentValue(true)
+        }
+        else if(textarea.value.length===0){
+            setCommentValue(false)
+        }
+        textarea.style.height = 'auto';
+        textarea.style.height = `${textarea.scrollHeight}px`;
+      };
+
+async function postComment (postId:string){
+    try {
+        const token: string | null = localStorage.getItem("token");
+            if (!token) {
+                throw new Error("Token Not Found")
+            }
+
+            const headers = {
+                'authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json', // Optional: Set other headers if needed
+            };
+
+            const response = await axios.post(`http://localhost:8787/api/v1/blog/${postId}/comment`, {
+                commentContent:commentContent
+            }, { headers });
+
+            if (response.status === 200) {
+                alert(response.data.message)
+                setCommentPosted(true)
 
 
-    return <div>
+            } else {
+                throw new Error(`Failed to comment post: ${response.statusText}`);
+            }
+    } catch (error:any) {
+        console.error("Cannot save post"+error.message);
+        
+    }
+}
+    return <div className={`flex    flex-col h-[100vh] `}>
         <Appbar {...user}></Appbar>
 
-        <div className="w-[50%] m-auto pt-32">
+        <div className={`w-[50%] m-auto pt-32 flex-shrink-0 overflow-y-sroll  z-10   ${isSidebarVisible ? '  opacity-60' : 'opacity-100'}`}>
             <div className="text-5xl font-extrabold">
                 {post?.title}
             </div>
@@ -274,10 +345,15 @@ export const BlogInfo = () => {
                         </div>
 
                     </div>
-                    <div>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                    <div className=" flex  space-x-3">
+                        <svg onClick={()=>{
+                        setIsSidebarVisible(true)
+                    }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 cursor-pointer z-20">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z" />
                         </svg>
+                        <div>
+                            {post.comments.length}
+                        </div>
 
                     </div>
                 </div>
@@ -313,5 +389,72 @@ export const BlogInfo = () => {
                 })}
             </div>
         </div>
+
+{/* sidebar */}
+
+      <div  className={`z-40  h-lvh w-[25rem] flex flex-col  space-y-28  shadow-md shadow-black overflow-scroll fixed ease-in-out transition-all delay-100 duration-300    bg-white px-5 ${isSidebarVisible ? 'right-0':'right-[-25rem]'}`}>
+                <div className="flex justify-between px-5 pt-10">
+                   <div className="text-2xl font-mono font-bold">
+                    Responses ({post.comments.length})
+                   </div>
+                   <div>
+                    <button onClick={()=>{
+                        setIsSidebarVisible(false)
+                    }}>Close</button>
+                   </div>
+                </div>
+
+
+                <div className=" min-h-52 bg-[	#fffff2] shadow-lg  shadow-slate-400 flex  flex-col">
+                    <div className="p-5 flex items-center  ">
+                        <div className="h-10 w-10 rounded-full bg-black">
+
+                        </div>
+                        <div className="ml-5">
+                           {user.name}
+                        </div>
+                        
+                    </div>
+                    <textarea onChange={(e)=>{
+                        setCommentContent(e.target.value)
+                    }} name=""  id=""  onInput={handleInput} value={commentContent} className="w-[90%] resize-none  block mx-4 overflow-hidden outline-none bg-inherit" rows={2}/>
+                    <button onClick={()=>{
+                       postComment(postId)
+                    }} ref={responseButton} className={commentValue? "bg-green-700 rounded-lg px-1 py-1 w-[20%] text-white text-sm  self-end mt-8 mb-7   mr-5" : "bg-green-700 rounded-lg px-1 py-1 w-[20%] text-white text-sm  self-end mt-8 mb-7  opacity-55  mr-5"}>Respond</button>
+                </div>
+
+                
+                <div className="grid grid-rows space-y-5 mt-0">
+                <hr className="w-[100%]" />
+                {comments.length===0 && <div>
+                    No Responses
+                    </div>}
+                {comments.length>0 && comments.map((comment,index)=>{
+                    let paras:string[]=comment.content.split("\n")
+                    return <div key={comment.id} className="border-b-[1px] space-y-5 flex flex-col border-gray w-[100%]">
+                    <div className="flex items-center">
+                     <div className="h-10 w-10 rounded-full bg-black">
+
+                        </div>
+                        <div className="ml-5">
+                           {comment.author.name}
+                        </div>    
+                    </div>
+
+                    <div className="space-y-6 text-sm font-light pb-10">
+                        {paras.map((para,index)=>{
+                            return <p key={index}>{para}</p>
+                        })}
+                       
+                    </div>
+               
+                </div>
+                })}
+                
+
+                </div>
+      </div>
+
+
     </div>
 }

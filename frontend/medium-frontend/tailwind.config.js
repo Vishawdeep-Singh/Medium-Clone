@@ -24,6 +24,9 @@ export default {
       animation: {
         likeJump: 'likeJump 0.3s ease',
       },
+      boxShadow: {
+        'custom': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 -4px 6px -4px rgba(0, 0, 0, 0.1)' // Define your custom box shadow
+      },
     },
   },
  

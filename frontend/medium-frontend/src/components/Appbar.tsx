@@ -31,7 +31,8 @@ export const Appbar = ({ id, email, name, savedPosts }:UserProps) => {
 
     
     
-    return <div><div className="flex justify-between border-solid border-black h-[57px]  items-center">
+    return <div className="flex-shrink-0 w-[100%]">
+      <div className="flex justify-between border-solid border-black h-[57px]  items-center">
         <div className="flex items-center">
         <div onClick={()=>{
           navigate("/blog")

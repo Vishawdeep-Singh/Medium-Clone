@@ -97,7 +97,11 @@ let userId = c.get("userId");
         include:{
             author:true,
             tags:true,
-            comments:true,
+            comments:{
+                include:{
+                author:true
+                }
+            },
             savers:true
         }
     })
@@ -199,6 +203,55 @@ export const savePost= async(c:Context)=>{
         console.error("Error saving post:", error);
         return c.json({
             message: "Failed to save post",
+            error: error.message
+        }, 500);
+    }
+}
+export const CommentPost= async(c:Context)=>{
+    try {
+        const postId = c.req.param('id')
+        interface Props{
+            commentContent:string
+        }
+        const body:Props =  await c.req.json();
+        
+        
+
+        if (!postId) {
+            return c.json({
+                message: "Post ID is required"
+            }, 400);
+        }
+        let userId = await c.get("userId");
+
+        if(!userId){
+            return c.json({
+                message: "userId is required"
+            }, 400);
+        }
+        const prisma = new PrismaClient({ datasourceUrl:c.env.DATABASE_URL  }).$extends(withAccelerate());
+        const  comment = await prisma.comment.create({
+          
+            data:{
+                content:body.commentContent,
+                authorId:userId,
+                postId:postId,
+                
+            }
+        })
+        
+            return c.json({
+            message: "Comment posted successfully",
+            commentPost: comment
+        },200);
+        
+        
+      
+        
+    } catch (error:any) {
+        console.error("Error comment on post:", error);
+        return c.json({
+            message: "Failed to comment on post",
             error: error.message
         }, 500);
     }
