@@ -1,15 +1,16 @@
-import { useEffect, useState } from "react";
-import { GrayButton } from "./GrayButton"
-import { ProfileCompo } from "./Who_TO_Follow"
+import { useLocation, useNavigate } from "react-router-dom";
+import { Appbar } from "../components/Appbar";
+import { GrayButton } from "../components/GrayButton";
+import { ProfileCompo } from "../components/Who_TO_Follow";
 import axios from "axios";
-import { LoadingSpinner } from "../pages/LoadingSpinner";
-import { useNavigate } from "react-router-dom";
-import { Appbar } from "./Appbar";
+import { useState, useEffect } from "react";
+import { LoadingSpinner } from "./LoadingSpinner";
 
+export const SearchPosts = ()=>{
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const searchTerm = queryParams.get('q');
 
-
-  
-export const Dashboard = () => {
     interface Tag {
         id: number;
         tag: string;
@@ -52,6 +53,7 @@ export const Dashboard = () => {
       }
     const [isLoading, setIsLoading] = useState(true);
     const [posts,SetPosts]=useState<Post[]>([]);
+    const [searchPosts,setsearchPosts]=useState<Post[]>([]);
     const [user,SetUser]=useState({
         id:"",
         email:" ",
@@ -66,7 +68,33 @@ export const Dashboard = () => {
         return savedFills? JSON.parse(savedFills) : {}
     });
   
+   
+    function searchPostsfunc(){
+        try {
+          interface Props1{
+            title:string;
+            id:string;
+          }
+        
+          if(searchTerm){
+            const searchPostsLower = searchTerm.toLowerCase().replace(/\s+/g, '');
+            const containsArr1 =posts.filter(post => 
+                post.title.toLowerCase().replace(/\s+/g, '').includes(searchPostsLower)
+              );
+              setsearchPosts(containsArr1)
+              console.log(containsArr1)
+          }
+            
+   
+      
   
+     
+        } catch (error) {
+          
+        }
+      }
+  
+
     const navigate = useNavigate();
 
     const formatDate =  (dateString: string): string => {
@@ -180,6 +208,10 @@ useEffect(()=>{
 fetchTags()
 },[])
 
+useEffect(()=>{
+    searchPostsfunc()
+  },[searchTerm])
+
 useEffect(() => {
     const fetchData = async () => {
       try {
@@ -251,7 +283,6 @@ if (isLoading) {
         </div>
   }
 
-
     return <div>
  <Appbar  posts={posts} user={user}></Appbar>
 
@@ -263,16 +294,17 @@ if (isLoading) {
 
             </div>
             <div className="grid grid-rows  px-20 mt-10 overflow-y-auto">
-                <div className="flex mx-[30px] mb-10 justify-between text-md font-light">
-                    <div className=" text-gray-700 hover:text-black">
-                        For You
-                    </div>
-                    <div className=" text-gray-700 hover:text-black">
-                        Following
-                    </div>
+                <div className="flex ">
+                    <div className="text-4xl font-bold text-gray-500">
+                    Results For
                 </div>
+                <div className="text-4xl font-bold text-black ml-5">
+                    {searchTerm}
+                </div>
+                </div>
+                
                 {/* posts */}
-                {posts && posts.map((post,index)=>{
+                {searchPosts && searchPosts.map((post,index)=>{
                     return <div key={post.id} className="h-[19rem] mx-[30px] border-y-[1px] border-[#F2F2F2] pt-10 space-y-2" >
 
 

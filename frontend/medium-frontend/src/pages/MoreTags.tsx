@@ -12,7 +12,7 @@ export const ExploreTags = ()=>{
       } interface Tag {
         id: number;
         tag: string;
-        post:post[]
+        post:Post[]
         
       }
       interface post{
@@ -50,7 +50,7 @@ export const ExploreTags = ()=>{
     const scoller= useRef<HTMLDivElement>(null);
     const [searchTag,setsearchTag]=useState<string>("");
     const [containsArr,setContainsArr]=useState<string[]>([]);
-  
+    const [posts,SetPosts]=useState<Post[]>([]);
   
     
     const [user,SetUser]=useState({
@@ -126,13 +126,39 @@ export const ExploreTags = ()=>{
                   setIsLoading(false)
         }
         }
+        async function fetchPosts() {
+          try {
+              const token:string | null = localStorage.getItem("token");
+              if(!token){
+                  throw new Error("Token Not Found")
+              }
+      
+              const headers = {
+                  'authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json', // Optional: Set other headers if needed
+                };
+                const response = await axios.get('http://localhost:8787/api/v1/blog', { headers });
+      
+                if (response.status === 200) {
+                  SetPosts(response.data); // Assuming response.data is an array of posts
+                 
+                 
+                } else {
+                  throw new Error(`Failed to fetch posts: ${response.statusText}`);
+                }
+              } catch (error:any) {
+                console.error('Error fetching posts:', error.message);
+                
+                setIsLoading(false);
+              }
+      }
 
        
 
                useEffect(()=>{
                 async function fetchData(){
                   try {
-                    await Promise.all([fetchUser(),fetchTags()])
+                    await Promise.all([fetchUser(),fetchTags(),fetchPosts()])
                   } catch (error) {
                     console.error("Error fetching data:", error);
                   }
@@ -189,7 +215,7 @@ export const ExploreTags = ()=>{
         </div>
                   }
     return <div>
-        <Appbar {...user}></Appbar>
+        <Appbar  posts={posts} user={user}></Appbar>
 
 
 

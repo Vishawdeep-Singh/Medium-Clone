@@ -12,6 +12,7 @@ import { BlogInfo } from './pages/Blog-Info'
 import { ProfileInfo } from './pages/Profile-Info'
 import { ExploreTags } from './pages/MoreTags'
 import { TagPosts } from './pages/TagPosts'
+import { SearchPosts } from './pages/searchPost'
 // import { Signin } from './pages/Signin'
 // import { Blog } from './pages/Blog'
 
@@ -29,6 +30,7 @@ function App() {
           <Route path='/userInfo/:userId1' element={<ProfileInfo></ProfileInfo>}/>
           <Route path='/explore-topics' element={<ExploreTags></ExploreTags>}/>
           <Route path='/tag/:tagName' element={<TagPosts/>}/>
+          <Route path='/search' element={<SearchPosts/>}/>
         
         </Routes>
       </BrowserRouter>

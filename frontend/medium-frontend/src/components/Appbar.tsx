@@ -14,24 +14,112 @@ interface UserProps {
   id: string;
   email: string;
   name: string;
-  savedPosts: SavedPost[]; // Adjust fields as per your schema
+  savedPosts: SavedPost[];
+  posts:Post[] // Adjust fields as per your schema
 }
-export const Appbar = ({ id, email, name, savedPosts }:UserProps) => {
+interface Post {
+  id: string;
+  title: string;
+  content: string;
+  published: boolean;
+  authorId: string;
+  date: string;
+  likes: number;
+  author: Author;
+  tags: Tag[];
+  comments: any[]; 
+  savers: any[];
+}
+interface Tag {
+  id: number;
+  tag: string;
+  post:Post[]
+  
+}
+
+
+interface Author {
+  id: string;
+  email: string;
+  name: string;
+  password: string; 
+}
+
+interface AppbarProps {
+  posts: Post[];
+  user: User;
+}
+interface User{
+  id:string;
+  email:string,
+  name:string,
+ savedPosts:post[]
+}
+interface post{
+  id: string;
+  title: string;
+  content: string;
+  published: boolean;
+  authorId: string;
+  date: string;
+  likes: number;
+  author: Author
+}
+export const Appbar = ({posts,user}:AppbarProps) => {
 
     const dropdowndiv=useRef<HTMLDivElement>(null)
     const [dropdown,SetDropdown]=useState(false)
     const navigate= useNavigate();
+    const [searchPosts,setsearchPosts]=useState<string>("");
+    interface ContainsArray{
+      title:string;
+      id:string
+    }
+    const [containsArr,setContainsArr]=useState<ContainsArray[]>([]);
    
     const Gotouser=()=>{
       const userId:string = "owner";
       navigate(`/userInfo/${userId}`)
     }
 
-    
+    function searchPostsfunc(){
+      try {
+        interface Props1{
+          title:string;
+          id:string;
+        }
+      
+        const PostNamesandId:Props1[] =  posts.map((post)=>{
+          return {
+            title:post.title,
+            id:post.id
+            }
+          })
+          
+    const searchPostsLower = searchPosts.toLowerCase().replace(/\s+/g, '');
+    const containsArr1 = PostNamesandId.filter(post => 
+      post.title.toLowerCase().replace(/\s+/g, '').includes(searchPostsLower)
+    );
 
+    setContainsArr(containsArr1);
+    console.log(containsArr1)
+      } catch (error) {
+        
+      }
+    }
+
+    useEffect(()=>{
+      searchPostsfunc()
+    },[searchPosts])
+    
+const handleKey=(event:any)=>{
+if(event.key==='Enter'){
+navigate(`/search?q=${encodeURIComponent(searchPosts.trim())}`)
+}
+}
     
     
-    return <div className="flex-shrink-0 w-[100%]">
+    return <div className="flex-shrink-0 w-[100%] relative">
       <div className="flex justify-between border-solid border-black h-[57px]  items-center">
         <div className="flex items-center">
         <div onClick={()=>{
@@ -45,7 +133,9 @@ export const Appbar = ({ id, email, name, savedPosts }:UserProps) => {
             </svg>
 
             <div className="ml-3">
-                <input type="text" placeholder="Search" className="focus:outline-none rounded-lg placeholder-gray-500 bg-inherit placeholder:font-thin" />
+                <input onChange={(e)=>{
+                    setsearchPosts(e.target.value)
+                }}  onKeyDown={handleKey} type="text" placeholder="Search" className="focus:outline-none rounded-lg placeholder-gray-500 bg-inherit placeholder:font-thin" />
             </div>
         </div>
         </div>
@@ -86,8 +176,8 @@ export const Appbar = ({ id, email, name, savedPosts }:UserProps) => {
             
       
    
-      <span className="block text-sm text-gray-900 dark:text-white">{name}</span>
-      <span className="block text-sm text-gray-500 truncate dark:text-gray-400">{email}</span>
+      <span className="block text-sm text-gray-900 dark:text-white">{user.name}</span>
+      <span className="block text-sm text-gray-500 truncate dark:text-gray-400">{user.email}</span>
    
         </div>
         <ul className="py-2" aria-labelledby="user-menu-button">
@@ -112,18 +202,27 @@ export const Appbar = ({ id, email, name, savedPosts }:UserProps) => {
 
         </div>
 
+
+    </div>
+
+    <div className="w-[100%] h-14 bg-gradient-to-r from-yellow-100 to-yellow-500">
+
+    </div>
+
+    <div className={` w-[50%] shadow-lg h-36 bg-white  select-none overflow-y-auto z-50 self-center left-[7rem] top-[3rem]   absolute p-4 ${setContainsArr.length>0 ? 'block':'hidden'} ${searchPosts.length>0 ? 'block':'hidden'} `}>
+        
+        {setContainsArr.length>0 && searchPosts.length>0 && containsArr.map((post)=>{
+            return <div key={post.id} onClick={()=>{
+                navigate(`/blog-info/${post.id}`)
+            }}  className=" rounded-lg text-md p-3 hover:bg-black hover:text-white">
+                {post.title}
+            </div>
+        })}
     </div>
 
 
 
 
-        <div className="bg-gradient-to-r from-zinc-50 to-zinc-950 h-10 w-[100%] overflow-hidden mix-blend-overlay">
-            
-
-
-
-            
-        </div>
         </div>
     
 }
