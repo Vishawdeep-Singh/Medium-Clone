@@ -13,6 +13,17 @@ export const Dashboard = () => {
     interface Tag {
         id: number;
         tag: string;
+        post:post[]
+        
+      }
+      interface post{
+        id: string;
+        title: string;
+        content: string;
+        published: boolean;
+        authorId: string;
+        date: string;
+        likes: number;
       }
       
       interface Author {
@@ -48,6 +59,7 @@ export const Dashboard = () => {
 
     })
     const [error, setError] = useState<string | null>(null);
+    const [tags,SetTags]=useState<Tag[]>([])
     const [fills,setFills]=useState<Fills>(()=>{
         const savedFills= localStorage.getItem("fills");
         return savedFills? JSON.parse(savedFills) : {}
@@ -125,6 +137,32 @@ const fetchUser = async()=>{
           
         }
 }
+
+
+const  fetchTags = async ()=>{
+try {
+    const token:string | null = localStorage.getItem("token");
+        if(!token){
+            throw new Error("Token Not Found")
+        }
+
+        const headers = {
+            'authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json', // Optional: Set other headers if needed
+          };
+          const response = await axios.get('http://localhost:8787/api/v1/blog/tags', { headers });
+          if(response.status===200){
+            SetTags(response.data);
+
+          }
+          else{
+            throw new Error(`Failed to fetch tags: ${response.statusText}`);
+          }
+} catch (error:any) {
+    console.error('Error fetching tags:', error.message);
+          setIsLoading(false)
+}
+}
 useEffect(()=>{
     fetchUser()
 },[])
@@ -135,10 +173,15 @@ useEffect(()=>{
 fetchPosts()
 },[])
 
+
+useEffect(()=>{
+fetchTags()
+},[])
+
 useEffect(() => {
     const fetchData = async () => {
       try {
-        await Promise.all([fetchUser(), fetchPosts()]);
+        await Promise.all([fetchUser(), fetchPosts(),fetchTags()]);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -340,19 +383,19 @@ if (isLoading) {
                 <div className="font-medium pt-28">
                     Recommended topics
                     <div className="flex flex-wrap pt-5">
-                        <GrayButton text={"Web Developmenr"}></GrayButton>
-                        <GrayButton text={"Web Developmenr"}></GrayButton>
-                        <GrayButton text={"Web Developmenr"}></GrayButton>
-                        <GrayButton text={"Web Developmenr"}></GrayButton>
-                        <GrayButton text={"Web Developmenr"}></GrayButton>
-                        <GrayButton text={"Web Developmenr"}></GrayButton>
-                        <GrayButton text={"Web Developmenr"}></GrayButton>
-                        <GrayButton text={"Web Developmenr"}></GrayButton>
-                        <GrayButton text={"Web Developmenr"}></GrayButton>
-                        <GrayButton text={"Web Developmenr"}></GrayButton>
-                        <GrayButton text={"Web Developmenr"}></GrayButton>
-                        <GrayButton text={"Web Developmenr"}></GrayButton>
+                       {tags.slice(0,9).map((tag)=>{
+                        return <GrayButton key={tag.id} text={tag.tag} onClick={()=>{
+                            navigate(`/tag/${tag.tag}`)
+                        }}></GrayButton>
+                       })}
                     </div>
+                </div>
+
+
+                <div onClick={()=>{
+                    navigate("/explore-topics")
+                }} className="mt-14 font-light hover:underline cursor-pointer">
+                    See More
                 </div>
 
 

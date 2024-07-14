@@ -1,1 +1,39 @@
 
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Hide scrollbar for IE, Edge, and Firefox */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+  }
+
+
+@keyframes bounceFade {
+    0%, 100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    50% {
+      transform: translateY(-50px);
+      opacity: 0.5;
+    }
+  }
+  
+  .bounce-fade {
+    width: 80px;
+    height: 80px;
+    background-color: #4299e1; /* Tailwind's blue-500 */
+    animation: bounceFade 2s infinite;
+  }
+  
+  /* To hide the scrollbar */
+  .scrollable-content::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbarBTN ::-webkit-scrollbar-button:single-button:horizontal:right:increment{
+    height: 14px;
+    width: 16px;
+  }

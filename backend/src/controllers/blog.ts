@@ -256,3 +256,58 @@ export const CommentPost= async(c:Context)=>{
         }, 500);
     }
 }
+
+export const getTags = async(c:Context)=>{
+    try {
+       
+        const prisma = new PrismaClient({ datasourceUrl:c.env.DATABASE_URL  }).$extends(withAccelerate());
+        const tags= await prisma.tag.findMany({
+            include:{
+                post:{
+                    include:{
+                        author:true,
+                        comments:true,
+                        savers:true,
+                        tags:true
+                    }
+                }
+            }
+        })
+      
+        return c.json(tags)
+    } catch (error:any) {
+        return c.json({
+            message:"Error in getting tags"+" " + error.message
+        },500)
+    }
+}
+export const getTagPosts = async(c:Context)=>{
+    try {
+        interface Props{
+            tagName:string
+        }
+       const body:Props = await c.req.json()
+        const prisma = new PrismaClient({ datasourceUrl:c.env.DATABASE_URL  }).$extends(withAccelerate());
+        const tagPosts= await prisma.tag.findUnique({
+            where:{
+                tag:body.tagName
+            },
+            include:{
+                post:{
+                    include:{
+                        author:true,
+                        comments:true,
+                        savers:true,
+                        tags:true
+                    }
+                }
+            }
+        })
+      
+        return c.json(tagPosts,200)
+    } catch (error:any) {
+        return c.json({
+            message:"Error in getting tagPosts"+" " + error.message
+        },500)
+    }
+}

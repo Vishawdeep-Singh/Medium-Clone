@@ -173,6 +173,7 @@ try {
 	}
     console.log(payload.id)
     c.set("userId",payload.id);
+   
     await next()
 } catch (error:any) {
     return c.json({

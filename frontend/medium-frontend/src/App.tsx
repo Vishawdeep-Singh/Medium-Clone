@@ -10,6 +10,8 @@ import { Blog } from './pages/Blog'
 import { NewBlog } from './pages/New-Blog'
 import { BlogInfo } from './pages/Blog-Info'
 import { ProfileInfo } from './pages/Profile-Info'
+import { ExploreTags } from './pages/MoreTags'
+import { TagPosts } from './pages/TagPosts'
 // import { Signin } from './pages/Signin'
 // import { Blog } from './pages/Blog'
 
@@ -25,6 +27,9 @@ function App() {
           <Route path="/new-blog" element={<NewBlog />} />
           <Route path="/blog-info/:postId1" element={<BlogInfo />} />
           <Route path='/userInfo/:userId1' element={<ProfileInfo></ProfileInfo>}/>
+          <Route path='/explore-topics' element={<ExploreTags></ExploreTags>}/>
+          <Route path='/tag/:tagName' element={<TagPosts/>}/>
+        
         </Routes>
       </BrowserRouter>
     </>
