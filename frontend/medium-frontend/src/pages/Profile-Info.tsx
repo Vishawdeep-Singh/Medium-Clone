@@ -1,10 +1,162 @@
 import { useNavigate, useParams } from "react-router-dom"
 import { Appbar } from "../components/Appbar"
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { LoadingSpinner } from "./LoadingSpinner";
 
+class User{
+       
+    id: string;
+    email: string;
+    name?: string;
+    following: Set<User>;
+    followedBy: Set<User>;
 
+    constructor(id: string, email: string, name?: string) {
+        this.id = id;
+        this.email = email;
+        this.name = name;
+        this.following = new Set();
+        this.followedBy = new Set();
+      }
+
+     async follow(user:User){
+       try {
+        if(!this.following.has(user)){
+            this.following.add(user);
+            user.followedBy.add(this)
+        }
+        const token:string | null = localStorage.getItem("token");
+            if(!token){
+                throw new Error("Token Not Found")
+            }
+    
+            const headers = {
+                'authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json', // Optional: Set other headers if needed
+              };
+        const response = await axios.post('http://localhost:8787/api/v1/blog/follow/create',{
+            followedById:this.id,
+            followingId:user.id
+        }, { headers });
+        if(response.status!==200){
+            this.following.delete(user);
+            user.followedBy.delete(this)
+        }
+       } catch (error:any) {
+        this.following.delete(user);
+        user.followedBy.delete(this)
+        console.error('Error in creating follow', error.message);
+      
+       }
+      }
+     async unfollow(user:User){
+        try{
+        if(this.following.has(user)){
+            this.following.delete(user);
+            user.followedBy.delete(this)
+        }
+        const token:string | null = localStorage.getItem("token");
+            if(!token){
+                throw new Error("Token Not Found")
+            }
+    
+            const headers = {
+                'authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json', // Optional: Set other headers if needed
+              };
+        const response = await axios.post('http://localhost:8787/api/v1/blog/follow/delete',{
+            followedById:this.id,
+            followingId:user.id
+        }, { headers });
+        if(response.status!==200){
+            this.following.add(user);
+            user.followedBy.add(this)
+        }
+       } catch (error:any) {
+        this.following.add(user);
+        user.followedBy.add(this)
+        console.error('Error in deleting follow', error.message);
+       
+       }
+      }
+}
+
+class SociaGraph{
+    users:Map<string,User>
+
+    constructor(){
+        this.users=new Map()
+    }
+
+    async  getuserFromDataBase(){
+        try {
+            const token:string | null = localStorage.getItem("token");
+            if(!token){
+                throw new Error("Token Not Found")
+            }
+    
+            const headers = {
+                'authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json', // Optional: Set other headers if needed
+              };
+              const response = await axios.get('http://localhost:8787/api/v1/blog/follow/data', { headers });
+              console.log(response.data);
+              let users;
+              if(response.status===200){
+                users =  response.data;
+              }
+              else {
+                throw new Error(`Failed to fetch data for follow: ${response.statusText}`);
+              }
+               
+                users.forEach((user:any)=>{
+                    const newUser = new User(user.id, user.email, user.name || undefined );
+                    this.users.set(user.id,newUser)
+                })
+    
+                users.forEach((user:any)=>{
+                    const newUser = this.users.get(user.id);
+    
+                    user.followedBy.forEach((follow:any)=>{
+                        const followingUser = this.users.get(follow.followingId);
+                        if(followingUser){
+                            newUser?.following.add(followingUser)  // in database data stored in reverse thats why we did that
+                        }
+                    })
+    
+                    user.following.forEach((followedBy:any)=>{
+                        const followedByuser = this.users.get(followedBy.followedById);
+                        if(followedByuser){
+                            newUser?.followedBy.add(followedByuser)
+                        }
+                    })
+                }) 
+        } catch (error:any) {
+            console.error('Error in fetching data for follow:', error);
+           
+        }
+        
+    }
+  
+getUser(userId: string): User | undefined {
+return this.users.get(userId);
+}
+async follow(userId: string, targetUserId: string) {
+const user = this.getUser(userId);
+const targetUser = this.getUser(targetUserId);
+if (user && targetUser) {
+  await user.follow(targetUser);
+}
+}
+async unfollow(userId: string, targetUserId: string) {
+const user = this.getUser(userId);
+const targetUser = this.getUser(targetUserId);
+if (user && targetUser) {
+  await user.unfollow(targetUser);
+}
+}
+}
 
 
 
@@ -13,6 +165,11 @@ import { LoadingSpinner } from "./LoadingSpinner";
 
 
 export const ProfileInfo = () => {
+    const { userId1 } = useParams();
+    let userId:string = ""
+    if(userId1 !== undefined){
+       userId=userId1
+    }
     interface Post {
         id: string;
         title: string;
@@ -37,12 +194,61 @@ export const ProfileInfo = () => {
         name: string;
         password: string; 
       }
-    const [posts,SetPosts] = useState<Post[]>([])
+      interface Post1 {
+        id: string;
+        title: string;
+        content: string;
+        published: boolean;
+        authorId: string;
+        date: string;
+        likes: number;
+        author: Author;
+        tags: Tag1[];
+        comments: any[]; 
+        savers: any[];
+      }
+      interface Tag1 {
+        id: number;
+        tag: string;
+        post:Post1[]
+        
+      }
+      interface User1{
+        id:string;
+        email:string,
+        name:string,
+       savedPosts:post[]
+      }
+      interface post{
+        id: string;
+        title: string;
+        content: string;
+        published: boolean;
+        authorId: string;
+        date: string;
+        likes: number;
+        author: Author
+      }
+      
+    const [posts,SetPosts] = useState<Post[]>([]);
+    const[allPosts,setAllPosts]=useState<Post1[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [savedPosts,setSavedPosts]=useState<Post[]>([]);
     const [whichPosts,setWhichPosts]=useState("your")
     const navigate = useNavigate();
     const [whoseInfo,setWhoseInfo]=useState("user");
+    const [ownerUser,SetOwnerUser]=useState({
+        id:"",
+        email:" ",
+        name:" ",
+        savedPosts:[]
+
+    })
+    
+
+    const [socialGraphData, setSocialGraphData] = useState<Map<string, User>>(new Map());
+    const graphRef = useRef<SociaGraph | null>(null);
+    const [followingStatus, setFollowingStatus] = useState<Map<string, boolean>>(new Map());
     const [user, SetUser] = useState({
         id: "",
         email: " ",
@@ -50,11 +256,49 @@ export const ProfileInfo = () => {
         savedPosts: []
 
     })
-    const { userId1 } = useParams();
-    let userId:string = ""
-    if(userId1 !== undefined){
-       userId=userId1
-    }
+
+    useEffect(()=>{
+        const fetch=async()=>{ 
+         setIsLoading(true)
+        
+         if (!graphRef.current) {
+             graphRef.current = new SociaGraph();
+             console.log(graphRef.current)
+             await graphRef.current.getuserFromDataBase().then(()=>{
+                 setSocialGraphData(new Map(graphRef.current!.users))
+                 const initialFollowStatus = new Map<string, boolean>();
+         graphRef.current!.users.forEach((user) => {
+           user.following.forEach((followingUsers:User) => {
+             initialFollowStatus.set(followingUsers.id, true);
+           })
+         });
+         setFollowingStatus(initialFollowStatus);
+             })
+             let followedBY= graphRef.current.getUser(userId)?.followedBy;
+             setFollowers(followedBY?.size)
+             setIsLoading(false)
+           }
+         }
+         fetch()
+     },[])
+ 
+ 
+     const onFollow=(targetId:string,ownerId:string,)=>{
+         graphRef.current?.follow(ownerId,targetId);
+         console.log(socialGraphData)
+         setSocialGraphData(new Map(graphRef.current!.users));
+         setFollowingStatus(new Map(followingStatus).set(targetId, true));
+         
+     }
+     const onUnFollow=(targetId:string,ownerId:string,)=>{
+         graphRef.current?.follow(ownerId,targetId)
+         setSocialGraphData(new Map(graphRef.current!.users));
+         setFollowingStatus(new Map(followingStatus).set(targetId, false));
+     }
+
+  
+
+    
 
     if(userId==="owner"){
         useEffect(() => {
@@ -66,7 +310,7 @@ export const ProfileInfo = () => {
             fetchUser()
         }, [user.id]) 
     }
-
+    let isFollowing= followingStatus.get(userId)
     const fetchUser = async () => {
         try {
             const token: string | null = localStorage.getItem("token");
@@ -113,7 +357,7 @@ export const ProfileInfo = () => {
             const response = await axios.get('http://localhost:8787/api/v1/user',{ headers });
             console.log(response)
             if (response.status === 200) {
-                SetUser(response.data); // Assuming response.data is an array of posts
+                SetOwnerUser(response.data); // Assuming response.data is an array of posts
                 SetPosts(response.data.posts);
                 
                 setSavedPosts(response.data.savedPosts)
@@ -144,15 +388,47 @@ export const ProfileInfo = () => {
         return `${day}-${month}-${year}`;
       };
 
-      if (isLoading) {
+      async function fetchPosts() {
+        try {
+            setIsLoading(true)
+            const token:string | null = localStorage.getItem("token");
+            if(!token){
+                throw new Error("Token Not Found")
+            }
+    
+            const headers = {
+                'authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json', // Optional: Set other headers if needed
+              };
+              const response = await axios.get('http://localhost:8787/api/v1/blog', { headers });
+    
+              if (response.status === 200) {
+                setAllPosts(response.data); // Assuming response.data is an array of posts
+               setIsLoading(false)
+               
+              } else {
+                throw new Error(`Failed to fetch posts: ${response.statusText}`);
+              }
+            } catch (error:any) {
+              console.error('Error fetching posts:', error.message);
+              
+              setIsLoading(false);
+            }
+    }
+useEffect(()=>{
+    
+    fetchPosts()
+},[userId])
+
+
+const[followers,setFollowers]=useState<number|undefined>()
+    if (isLoading) {
         return <div className="absolute top-[20rem] left-[45rem]">
             <LoadingSpinner></LoadingSpinner>
             </div>
       }
-    
-
     return <div>
-        <Appbar {...user}></Appbar>
+        <Appbar posts={allPosts} user={ownerUser}></Appbar>
 
         <div>
 
@@ -366,8 +642,21 @@ export const ProfileInfo = () => {
                            {user.name}
                         </div>
                         <div className="text-[#6B6B6B]">
-                            1 Follower
+                           {followers} Followers
                         </div>
+                        {isFollowing ? (
+ <button  onClick={()=>{
+    onUnFollow(ownerUser.id,userId)
+ }} className="px-3 rounded-xl border-[1px] w-[40%] hover:bg-black hover:text-white border-black mr-5 font-light py-1 " >
+          Following
+ </button>
+    ) : (
+        <button onClick={()=>{
+            onFollow(ownerUser.id,userId)
+         }} className="px-3 rounded-xl border-[1px] w-[40%]  hover:bg-black hover:text-white border-black mr-5 font-light py-1 " >
+          Follow
+        </button>
+    )}
                     </div>
                 </div>
             </div>

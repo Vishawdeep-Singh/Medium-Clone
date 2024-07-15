@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { authMiddleware, isCreatePostValid, isPostSaved, isUpdatePostValid } from "../middlewares/middlewares123";
 import { CommentPost, createBlog, getBlog, getPosts, getTagPosts, getTags, like, savePost, UpdateBlog } from "../controllers/blog";
+import { createFollow, FollowData, UnFollow } from "../controllers/follow";
 
 const blogRoutes = new Hono<{
     Bindings: {
@@ -20,6 +21,12 @@ blogRoutes.post('/save',authMiddleware,isPostSaved,savePost);
 blogRoutes.post('/tag',authMiddleware,getTagPosts)
 blogRoutes.get('/tags',authMiddleware,getTags); 
 blogRoutes.get('/:id',authMiddleware,getBlog);// always put get request with params lower
+
+
+
+blogRoutes.post("/follow/create",authMiddleware,createFollow);
+blogRoutes.post("/follow/delete",authMiddleware,UnFollow);
+blogRoutes.get("/follow/data",authMiddleware,FollowData)
 
 
 export default blogRoutes

@@ -40,6 +40,28 @@ try {
     })
 }
 }
+export const Getuser_followingPosts=async (c:Context)=>{
+try {
+    const prisma = new PrismaClient({ datasourceUrl: c.env.DATABASE_URL }).$extends(withAccelerate())
+    let userId = await c.get("userId");
+    let user = await prisma.user.findUnique({
+        where:{
+            id:userId,
+        },
+      include:{
+        followedBy:true,
+        following:true
+       }
+
+       
+    })
+    return c.json(user,200)
+} catch (error:any) {
+    return c.json({
+        message: "Error in finding followers user" + " " + error.message
+    })
+}
+}
 export const Getanyuser=async (c:Context)=>{
 try {
     interface Props{
@@ -57,7 +79,10 @@ try {
         name:true,
         posts:{
             include:{
-                author:true
+                author:true,
+                tags:true,
+                comments:true,
+                savers:true
             }
         },
         savedPosts:{
@@ -74,6 +99,33 @@ try {
 } catch (error:any) {
     return c.json({
         message: "Error in finding info about any user" + " " + error.message
+    })
+}
+}
+export const Getallusers=async (c:Context)=>{
+try {
+    
+    const prisma = new PrismaClient({ datasourceUrl: c.env.DATABASE_URL }).$extends(withAccelerate())
+   
+    let user = await prisma.user.findMany({
+        select:{
+            id:true,
+            email:true,
+            name:true,
+            followedBy:true,
+            following:true
+           
+
+
+        }
+        
+
+       
+    })
+    return c.json(user,200)
+} catch (error:any) {
+    return c.json({
+        message: "Error in finding all users" + " " + error.message
     })
 }
 }
