@@ -244,13 +244,16 @@ export const Dashboard = () => {
             await graphRef.current.getuserFromDataBase().then(()=>{
                 console.log(graphRef.current?.users)
                 setSocialGraphData(new Map(graphRef.current!.users))
-                const initialFollowStatus = new Map<string, boolean>();
-        graphRef.current!.users.forEach((user) => {
-          user.following.forEach((followingUsers:User) => {
-            initialFollowStatus.set(followingUsers.id, true);
-          })
-        });
-        setFollowingStatus(initialFollowStatus);
+        //         const initialFollowStatus = new Map<string, boolean>();
+        //         graphRef.current?.getUser(user.id)
+        // graphRef.current!.users.forEach((user) => {
+        //     initialFollowStatus.set(user.id, false);
+        //   user.following.forEach((followingUsers:User) => {
+        //     initialFollowStatus.set(followingUsers.id, true);
+        //     console.log(initialFollowStatus)
+        //   })
+        // });
+        // setFollowingStatus(initialFollowStatus);
             })
             setIsLoading(false)
             
@@ -428,6 +431,17 @@ const fetchUser = async()=>{
 
           if (response.status === 200) {
             SetUser(response.data); // Assuming response.data is an array of posts
+           const loggedInuser= graphRef.current?.getUser(response.data.id);
+           const initialFollowStatus = new Map<string, boolean>();
+           graphRef.current!.users.forEach((user) => {
+            // Initialize the follow status for each user to false
+            initialFollowStatus.set(user.id, false);
+        });
+           
+         loggedInuser?.following.forEach((followingUsers:User) => {
+            initialFollowStatus.set(followingUsers.id, true);
+          })
+          setFollowingStatus(initialFollowStatus);
             
             const savePostsIds = response.data.savedPosts;
             const fillobj =  savePostsIds.map((post:any)=>{
