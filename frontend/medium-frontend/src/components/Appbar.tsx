@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { LoadingSpinner } from "../pages/LoadingSpinner";
 
+
+
 interface SavedPost {
   id: string;
 }
@@ -66,7 +68,7 @@ interface post{
   author: Author
 }
 export const Appbar = ({posts,user}:AppbarProps) => {
-
+//  const posts:Post[] = useRecoilValue(PostsAtom)
     const dropdowndiv=useRef<HTMLDivElement>(null)
     const [dropdown,SetDropdown]=useState(false)
     const navigate= useNavigate();

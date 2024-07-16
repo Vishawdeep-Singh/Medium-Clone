@@ -5,6 +5,8 @@ import axios from "axios";
 import { LoadingSpinner } from "../pages/LoadingSpinner";
 import { useNavigate } from "react-router-dom";
 import { Appbar } from "./Appbar";
+import { useRecoilState, useRecoilValueLoadable } from "recoil";
+import { PostsAtom, UserAtom } from "../states/atoms";
 
 
 class User{
@@ -163,31 +165,168 @@ if (user && targetUser) {
 }
 }
 
+
+
+
+const usePosts=()=>{
+    const postsLoadable = useRecoilValueLoadable(PostsAtom);
+    const [error, setError] = useState<string | null>(null);
+  
+    let posts = null;
+    let isLoading = false;
+  
+    switch (postsLoadable.state) {
+      case 'hasValue':
+        posts = postsLoadable.contents;
+        break;
+      case 'loading':
+        isLoading = true;
+        break;
+      case 'hasError':
+        setError(postsLoadable.contents.message);
+        break;
+      default:
+        break;
+    }
+  
+    return { posts, isLoading, error };
+
+    
+}
+
+const useUsers = ()=>{
+
+    const [users,SetUsers]=useState<Users[]>([])
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null)
+
+    useEffect(()=>{
+        const fetchUsers = async()=>{
+            try {
+                const token:string | null = localStorage.getItem("token");
+                if(!token){
+                    throw new Error("Token Not Found")
+                }
+        
+                const headers = {
+                    'authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json', // Optional: Set other headers if needed
+                  };
+                  const response = await axios.get('http://localhost:8787/api/v1/users', { headers });
+        
+                  if (response.status === 200) {
+                    
+                    SetUsers(response.data); // Assuming response.data is an array of posts
+                    setIsLoading(false)
+                    
+                  } else {
+                    throw new Error(`Failed to fetch users: ${response.statusText}`);
+                    setIsLoading(false)
+                  }
+                } catch (error:any) {
+                  console.error('Error fetching users:', error.message);
+                  setIsLoading(false)
+                  
+                }
+        }
+        fetchUsers()
+    },[])
+    return { users, isLoading, error };
+}
+interface Post1 {
+    id: string;
+    title: string;
+    content: string;
+    published: boolean;
+    authorId: string;
+    date: string;
+    likes: number;
+    author: Author;
+    tags: Tag1[];
+    comments: any[]; 
+    savers: any[];
+  }
+  interface Tag1 {
+    id: number;
+    tag: string;
+  }
+
+
+interface Tag {
+    id: number;
+    tag: string;
+    post:Post[]
+    
+  }
+  interface post{
+    id: string;
+    title: string;
+    content: string;
+    published: boolean;
+    authorId: string;
+    date: string;
+    likes: number;
+    author: Author
+  }
+  
+  interface Author {
+    id: string;
+    email: string;
+    name: string;
+    password: string; 
+  }
+  
+  interface Post {
+    id: string;
+    title: string;
+    content: string;
+    published: boolean;
+    authorId: string;
+    date: string;
+    likes: number;
+    author: Author;
+    tags: Tag[];
+    comments: any[]; 
+    savers: any[];
+  }
+  interface Fills {
+    [key: string]: string;
+  }
+  interface Users{
+    
+    id:string,
+    email:string,
+    name:string,
+    followedBy:[],
+    following:[]
+
+
+}
   
 export const Dashboard = () => {
 
-    interface Post1 {
-        id: string;
-        title: string;
-        content: string;
-        published: boolean;
-        authorId: string;
-        date: string;
-        likes: number;
-        author: Author;
-        tags: Tag1[];
-        comments: any[]; 
-        savers: any[];
-      }
-      interface Tag1 {
-        id: number;
-        tag: string;
-      }
+  
+      
   
     const [socialGraphData, setSocialGraphData] = useState<Map<string, User>>(new Map());
     const graphRef = useRef<SociaGraph | null>(null);
     const [followingStatus, setFollowingStatus] = useState<Map<string, boolean>>(new Map());
     const[followingPosts,setFollowingPosts]=useState<Post1[]>([])
+
+const {posts,isLoading:postsLoading,error:postsError}=usePosts();
+const {users,isLoading:usersLoading,error:usersError}=useUsers();
+const [user,SetUser]=useRecoilState(UserAtom)
+const [forYouPosts,setForYouPosts]=useState(true)
+const [isLoading, setIsLoading] = useState(true);
+const [tags,SetTags]=useState<Tag[]>([])
+const [fills,setFills]=useState<Fills>(()=>{
+    const savedFills= localStorage.getItem("fills");
+    return savedFills? JSON.parse(savedFills) : {}
+});
+
+
+
+
 
 
     const fetchFollwingUser = async (followingUserId:string) => {
@@ -227,13 +366,7 @@ export const Dashboard = () => {
 
         }
     }
-    const [user,SetUser]=useState({
-        id:"",
-        email:" ",
-        name:" ",
-        savedPosts:[]
-
-    })
+   
     useEffect(()=>{
        const fetch=async()=>{ 
         setIsLoading(true)
@@ -314,68 +447,13 @@ export const Dashboard = () => {
 
 
 
+    
+    
+    
+    
 
-    interface Tag {
-        id: number;
-        tag: string;
-        post:Post[]
-        
-      }
-      interface post{
-        id: string;
-        title: string;
-        content: string;
-        published: boolean;
-        authorId: string;
-        date: string;
-        likes: number;
-        author: Author
-      }
-      
-      interface Author {
-        id: string;
-        email: string;
-        name: string;
-        password: string; 
-      }
-      
-      interface Post {
-        id: string;
-        title: string;
-        content: string;
-        published: boolean;
-        authorId: string;
-        date: string;
-        likes: number;
-        author: Author;
-        tags: Tag[];
-        comments: any[]; 
-        savers: any[];
-      }
-      interface Fills {
-        [key: string]: string;
-      }
-    const [isLoading, setIsLoading] = useState(true);
-    const [posts,SetPosts]=useState<Post[]>([]);
     
-    interface Users{
-        
-            id:string,
-            email:string,
-            name:string,
-            followedBy:[],
-            following:[]
-    
-        
-    }
-    const [users,SetUsers]=useState<Users[]>([])
-    const [error, setError] = useState<string | null>(null);
-    const [tags,SetTags]=useState<Tag[]>([])
-    const [fills,setFills]=useState<Fills>(()=>{
-        const savedFills= localStorage.getItem("fills");
-        return savedFills? JSON.parse(savedFills) : {}
-    });
-    const [isFollowing,setisFollowing]=useState(false)
+   
 
   
     const navigate = useNavigate();
@@ -387,32 +465,7 @@ export const Dashboard = () => {
         const day = ('0' + dateObj.getDate()).slice(-2);
         return `${day}-${month}-${year}`;
       };
-async function fetchPosts() {
-    try {
-        const token:string | null = localStorage.getItem("token");
-        if(!token){
-            throw new Error("Token Not Found")
-        }
 
-        const headers = {
-            'authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json', // Optional: Set other headers if needed
-          };
-          const response = await axios.get('http://localhost:8787/api/v1/blog', { headers });
-
-          if (response.status === 200) {
-            SetPosts(response.data); // Assuming response.data is an array of posts
-           
-            setError(null);
-          } else {
-            throw new Error(`Failed to fetch posts: ${response.statusText}`);
-          }
-        } catch (error:any) {
-          console.error('Error fetching posts:', error.message);
-          setError('Failed to fetch posts. Please try again later.');
-          setIsLoading(false);
-        }
-}
 
 
 const fetchUser = async()=>{
@@ -464,34 +517,6 @@ const fetchUser = async()=>{
           
         }
 }
-const fetchUsers = async()=>{
-    try {
-        const token:string | null = localStorage.getItem("token");
-        if(!token){
-            throw new Error("Token Not Found")
-        }
-
-        const headers = {
-            'authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json', // Optional: Set other headers if needed
-          };
-          const response = await axios.get('http://localhost:8787/api/v1/users', { headers });
-
-          if (response.status === 200) {
-            
-            SetUsers(response.data); // Assuming response.data is an array of posts
-            
-            
-          } else {
-            throw new Error(`Failed to fetch users: ${response.statusText}`);
-            setIsLoading(false)
-          }
-        } catch (error:any) {
-          console.error('Error fetching users:', error.message);
-          setIsLoading(false)
-          
-        }
-}
 
 
 const  fetchTags = async ()=>{
@@ -527,7 +552,7 @@ useEffect(() => {
     const fetchData = async () => {
         setIsLoading(true)
       try {
-        await Promise.all([fetchUser(), fetchPosts(),fetchTags(),fetchUsers()]);
+        await Promise.all([fetchUser(),fetchTags()]);
 
         console.log(users)
       } catch (error) {
@@ -538,7 +563,7 @@ useEffect(() => {
     };
     fetchData();
   }, []);
-  const [forYouPosts,setForYouPosts]=useState(true)
+
 
  
 
@@ -589,9 +614,7 @@ navigate(`/userInfo/${userId}`)
 function handleClick(postId:string){
     navigate(`/blog-info/${postId}`);
 }
-useEffect(() => {
-    console.log(fills);
-  }, [fills]); // Log fills whenever it changes
+
 
 
   
@@ -605,7 +628,7 @@ if (isLoading) {
 
 
     return <div>
- <Appbar  posts={posts} user={user}></Appbar>
+ <Appbar  posts={posts!} user={user}></Appbar>
 
 
 <div>

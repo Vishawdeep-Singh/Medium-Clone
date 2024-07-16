@@ -13,6 +13,7 @@ import { ProfileInfo } from './pages/Profile-Info'
 import { ExploreTags } from './pages/MoreTags'
 import { TagPosts } from './pages/TagPosts'
 import { SearchPosts } from './pages/searchPost'
+import { RecoilRoot } from 'recoil'
 // import { Signin } from './pages/Signin'
 // import { Blog } from './pages/Blog'
 
@@ -20,6 +21,7 @@ function App() {
 
   return (
     <>
+       <RecoilRoot>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Signup />} />
@@ -27,13 +29,13 @@ function App() {
           <Route path="/blog" element={<Blog />} />
           <Route path="/new-blog" element={<NewBlog />} />
           <Route path="/blog-info/:postId1" element={<BlogInfo />} />
-          <Route path='/userInfo/:userId1' element={<ProfileInfo></ProfileInfo>}/>
-          <Route path='/explore-topics' element={<ExploreTags></ExploreTags>}/>
-          <Route path='/tag/:tagName' element={<TagPosts/>}/>
-          <Route path='/search' element={<SearchPosts/>}/>
-        
+          <Route path='/userInfo/:userId1' element={<ProfileInfo />} />
+          <Route path='/explore-topics' element={<ExploreTags />} />
+          <Route path='/tag/:tagName' element={<TagPosts />} />
+          <Route path='/search' element={<SearchPosts />} />
         </Routes>
       </BrowserRouter>
+    </RecoilRoot>
     </>
   )
 }
