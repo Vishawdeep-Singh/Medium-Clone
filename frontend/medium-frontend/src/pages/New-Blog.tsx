@@ -3,8 +3,78 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createPostType } from "@johnwick002992/common-medium-app";
 import { LoadingSpinner } from "./LoadingSpinner";
+import { SetterOrUpdater, useRecoilState, useRecoilStateLoadable, useRecoilValue, useRecoilValueLoadable, useSetRecoilState } from "recoil";
+import { PostsAtom, UserAtom } from "../states/atoms";
+interface Post1 {
+  id: string;
+  title: string;
+  content: string;
+  published: boolean;
+  authorId: string;
+  date: string;
+  likes: number;
+  author: Author;
+  tags: Tag1[];
+  comments: any[]; 
+  savers: any[];
+}
+interface Tag1 {
+  id: number;
+  tag: string;
+}
 
+interface Tag {
+  id: number;
+  tag: string;
+  post:Post[]
+  
+}
+interface post{
+  id: string;
+  title: string;
+  content: string;
+  published: boolean;
+  authorId: string;
+  date: string;
+  likes: number;
+  author: Author
+}
+
+interface Author {
+  id: string;
+  email: string;
+  name: string;
+  password: string; 
+}
+
+interface Post {
+  id: string;
+  title: string;
+  content: string;
+  published: boolean;
+  authorId: string;
+  date: string;
+  likes: number;
+  author: Author;
+  tags: Tag[];
+  comments: any[]; 
+  savers: any[];
+}
+interface Fills {
+  [key: string]: string;
+}
+interface Users{
+      
+  id:string,
+  email:string,
+  name:string,
+  followedBy:[],
+  following:[]
+
+
+}
 export const NewBlog = () => {
+  const setAllPosts  = useSetRecoilState(PostsAtom)
   const [dropdown,SetDropdown]=useState(false)
   const navigate= useNavigate();
   const [isLoading, setIsLoading] = useState(true);
@@ -17,39 +87,9 @@ export const NewBlog = () => {
     tags:""
   })
   
-  const [user,SetUser]=useState({
-      email:" ",
-      name:" "
+  const user = useRecoilValue(UserAtom);
 
-  })
-
-  const fetchUser = async()=>{
-      try {
-          const token:string | null = localStorage.getItem("token");
-          if(!token){
-              throw new Error("Token Not Found")
-          }
   
-          const headers = {
-              'authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json', // Optional: Set other headers if needed
-            };
-            const response = await axios.get('http://localhost:8787/api/v1/user', { headers });
-  
-            if (response.status === 200) {
-              SetUser(response.data); // Assuming response.data is an array of posts
-              setIsLoading(false)
-              
-            } else {
-              throw new Error(`Failed to fetch posts: ${response.statusText}`);
-              setIsLoading(false)
-            }
-          } catch (error:any) {
-            console.error('Error fetching posts:', error.message);
-            setIsLoading(false)
-            
-          }
-  }
   async function createBlog(){
     try {
       setIsLoading2(true)
@@ -65,7 +105,7 @@ export const NewBlog = () => {
         const response = await axios.post('http://localhost:8787/api/v1/blog', blogData,{ headers });
        
         if (response.status === 200) {
-          
+          setAllPosts( (prev:Post[]) => [...prev,response.data])
           setIsLoading2(false)
           navigate("/blog")
        
@@ -79,9 +119,7 @@ export const NewBlog = () => {
         
       }
   }
-  useEffect(()=>{
-      fetchUser()
-  },[])
+  
   
 
     const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

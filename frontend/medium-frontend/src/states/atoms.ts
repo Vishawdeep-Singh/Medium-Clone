@@ -71,12 +71,44 @@ interface Post1 {
 }
 export const UserAtom = atom({
     key:"userAtom",
-    default: {
-        id: "",
-        email: "",
-        name: "",
-        savedPosts: []
-      },
+    default: selector({
+      key:"DefaultUser",
+      get: async({get})=>{
+        
+          try {
+              
+              const token:string | null = localStorage.getItem("token");
+              if(!token){
+                  throw new Error("Token Not Found")
+              }
+      
+              const headers = {
+                  'authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json', // Optional: Set other headers if needed
+                };
+                const response = await axios.get('http://localhost:8787/api/v1/user', { headers });
+      
+                if (response.status === 200) {
+                  return response.data; // Assuming response.data is an array of posts
+                 
+                  
+                } else {
+                  throw new Error(`Failed to fetch userInfo: ${response.statusText}`);
+                  
+                }
+              } catch (error:any) {
+                console.error('Error fetching user info:', error.message);
+        throw error;
+                
+              }
+     
+      }
+    })
+})
+
+export const TagsAtom=atom<Tag[]>({
+    key:'tagsAtom',
+    default:[]
 })
 export const PostsAtom = atom<Post[]>({
     key:"postsAtom",
@@ -111,3 +143,8 @@ export const PostsAtom = atom<Post[]>({
         }
     }),
 })
+
+export const followingStatusAtom = atom<Map<string, boolean>>({
+  key: 'followingStatus',
+  default: new Map(), // Initial value can be empty or pre-populated based on your logic
+});

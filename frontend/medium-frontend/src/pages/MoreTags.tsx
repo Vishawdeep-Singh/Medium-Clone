@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { GrayButton } from "../components/GrayButton";
+import { useTags } from "../hooks/Hooks";
+import { BarLoader } from "react-spinners";
 
 
 export const ExploreTags = ()=>{
@@ -45,120 +47,30 @@ export const ExploreTags = ()=>{
         comments: any[]; 
         savers: any[];
       }
-      const [tags,SetTags]=useState<Tag[]>([])
+      interface UseTagsResult {
+        tags: Tag[] ;
+        isLoading: boolean;
+        error: string | null;
+      }
+      const {tags,isLoading:tagsLoading,error:tagsError}:UseTagsResult=useTags();
     const [isLoading, setIsLoading] = useState(true);
     const scoller= useRef<HTMLDivElement>(null);
     const [searchTag,setsearchTag]=useState<string>("");
     const [containsArr,setContainsArr]=useState<string[]>([]);
-    const [posts,SetPosts]=useState<Post[]>([]);
+  
   
     
-    const [user,SetUser]=useState({
-        id:"",
-        email:" ",
-        name:" ",
-        savedPosts:[]
-
-    })
-    const [fills,setFills]=useState<Fills>(()=>{
-        const savedFills= localStorage.getItem("fills");
-        return savedFills? JSON.parse(savedFills) : {}
-    });
+   
+    
     const navigate = useNavigate()
-    const fetchUser = async()=>{
-        try {
-            const token:string | null = localStorage.getItem("token");
-            if(!token){
-                throw new Error("Token Not Found")
-            }
     
-            const headers = {
-                'authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json', // Optional: Set other headers if needed
-              };
-              const response = await axios.get('http://localhost:8787/api/v1/user', { headers });
-    
-              if (response.status === 200) {
-                SetUser(response.data); // Assuming response.data is an array of posts
-                const savePostsIds = response.data.savedPosts;
-                const fillobj =  savePostsIds.map((post:any)=>{
-                  return post.id
-                });
-                let fills:Fills ={}
-                fillobj.forEach((id: string)=>{
-                    fills[id] = "black"
-                  })
-                  localStorage.setItem("fills",JSON.stringify(fills))
-                
-              } else {
-                throw new Error(`Failed to fetch posts: ${response.statusText}`);
-                setIsLoading(false)
-              }
-            } catch (error:any) {
-              console.error('Error fetching posts:', error.message);
-              setIsLoading(false)
-              
-            }
-    }
-    const  fetchTags = async ()=>{
-        try {
-            const token:string | null = localStorage.getItem("token");
-                if(!token){
-                    throw new Error("Token Not Found")
-                }
-        
-                const headers = {
-                    'authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json', // Optional: Set other headers if needed
-                  };
-                  const response = await axios.get('http://localhost:8787/api/v1/blog/tags', { headers });
-                  if(response.status===200){
-                   
-                    SetTags(response.data);
-                    
-        
-                  }
-                  else{
-                    throw new Error(`Failed to fetch tags: ${response.statusText}`);
-                  }
-        } catch (error:any) {
-            console.error('Error fetching tags:', error.message);
-                  setIsLoading(false)
-        }
-        }
-        async function fetchPosts() {
-          try {
-              const token:string | null = localStorage.getItem("token");
-              if(!token){
-                  throw new Error("Token Not Found")
-              }
-      
-              const headers = {
-                  'authorization': `Bearer ${token}`,
-                  'Content-Type': 'application/json', // Optional: Set other headers if needed
-                };
-                const response = await axios.get('http://localhost:8787/api/v1/blog', { headers });
-      
-                if (response.status === 200) {
-                  SetPosts(response.data); // Assuming response.data is an array of posts
-                 
-                 
-                } else {
-                  throw new Error(`Failed to fetch posts: ${response.statusText}`);
-                }
-              } catch (error:any) {
-                console.error('Error fetching posts:', error.message);
-                
-                setIsLoading(false);
-              }
-      }
 
        
 
                useEffect(()=>{
                 async function fetchData(){
                   try {
-                    await Promise.all([fetchUser(),fetchTags(),fetchPosts()])
+                    await Promise.all([])
                   } catch (error) {
                     console.error("Error fetching data:", error);
                   }
@@ -214,12 +126,15 @@ export const ExploreTags = ()=>{
         <LoadingSpinner></LoadingSpinner>
         </div>
                   }
+
+                  
     return <div>
-        <Appbar  posts={posts} user={user}></Appbar>
+        <Appbar></Appbar>
 
 
 
         <div className="flex items-center mt-10 mx-48 space-x-4">
+          
         <button
           onClick={scrollLeft}
           className=" z-10 bg-black text-white flex-shrink-0 p-2 h-10 w-10 rounded-full"
@@ -227,6 +142,13 @@ export const ExploreTags = ()=>{
           &#8592;
         </button>
             <div ref={scoller} className="overflow-x-auto scrollbar-hide w-[80%] flex scroll-smooth ">
+            {tagsLoading &&   <BarLoader
+        color={"#000000"}
+        loading={tagsLoading}
+       width={"1000px"}
+        aria-label="Loading Spinner"
+        data-testid="loader"
+      /> }
                 {tags.map((tag)=>{
                     return <GrayButton key={tag.id} onClick={()=>{
                         navigate(`/tag/${tag.tag}`)

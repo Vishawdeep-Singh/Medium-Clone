@@ -388,37 +388,7 @@ export const ProfileInfo = () => {
         return `${day}-${month}-${year}`;
       };
 
-      async function fetchPosts() {
-        try {
-            setIsLoading(true)
-            const token:string | null = localStorage.getItem("token");
-            if(!token){
-                throw new Error("Token Not Found")
-            }
-    
-            const headers = {
-                'authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json', // Optional: Set other headers if needed
-              };
-              const response = await axios.get('http://localhost:8787/api/v1/blog', { headers });
-    
-              if (response.status === 200) {
-                setAllPosts(response.data); // Assuming response.data is an array of posts
-               setIsLoading(false)
-               
-              } else {
-                throw new Error(`Failed to fetch posts: ${response.statusText}`);
-              }
-            } catch (error:any) {
-              console.error('Error fetching posts:', error.message);
-              
-              setIsLoading(false);
-            }
-    }
-useEffect(()=>{
-    
-    fetchPosts()
-},[userId])
+      
 
 
 const[followers,setFollowers]=useState<number|undefined>()
@@ -428,7 +398,7 @@ const[followers,setFollowers]=useState<number|undefined>()
             </div>
       }
     return <div>
-        <Appbar posts={allPosts} user={ownerUser}></Appbar>
+        <Appbar></Appbar>
 
         <div>
 

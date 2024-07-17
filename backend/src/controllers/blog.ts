@@ -36,6 +36,12 @@ console.log(userId)
             }
 
         }
+        ,include:{
+            author:true,
+            comments:true,
+            savers:true,
+            tags:true
+        }
     })
     return c.json(createdPost,200)
 } catch (error:any) {

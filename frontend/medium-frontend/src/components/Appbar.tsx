@@ -6,6 +6,9 @@ import { Avatar, Dropdown, Navbar } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { LoadingSpinner } from "../pages/LoadingSpinner";
+import { useRecoilValue, useRecoilValueLoadable } from "recoil";
+import { PostsAtom, UserAtom } from "../states/atoms";
+import { BounceLoader, PropagateLoader } from "react-spinners";
 
 
 
@@ -67,7 +70,37 @@ interface post{
   likes: number;
   author: Author
 }
-export const Appbar = ({posts,user}:AppbarProps) => {
+export const Appbar = () => {
+  const [isLoading,setIsLoading]=useState(false)
+  const Loadableuser=useRecoilValueLoadable(UserAtom);
+  const [user,SetUser]=useState({
+    id: "",
+    email: "",
+    name: "",
+    savedPosts: []
+  })
+
+  useEffect(() => {
+    setIsLoading(true)
+    // Check the state of loadableUser to determine UI state
+    switch (Loadableuser.state) {
+      case 'loading':
+        setIsLoading(true);
+        break;
+      case 'hasValue':
+        setIsLoading(false);
+        SetUser(Loadableuser.contents); // Set user data from Recoil state
+        break;
+      case 'hasError':
+        console.error('Error loading user:', Loadableuser.contents.message);
+        setIsLoading(false);
+        break;
+      default:
+        break;
+    }
+  }, [Loadableuser]);
+
+  const posts:post[] = useRecoilValue(PostsAtom)
 //  const posts:Post[] = useRecoilValue(PostsAtom)
     const dropdowndiv=useRef<HTMLDivElement>(null)
     const [dropdown,SetDropdown]=useState(false)
@@ -120,7 +153,14 @@ navigate(`/search?q=${encodeURIComponent(searchPosts.trim())}`)
 }
 }
     
-    
+    {isLoading &&  <BounceLoader
+      color={"#000000"}
+      loading={isLoading}
+      
+      size={40}
+      aria-label="Loading Spinner"
+      data-testid="loader"
+    /> }
     return <div className="flex-shrink-0 w-[100%] relative">
       <div className="flex justify-between border-solid border-black h-[57px]  items-center">
         <div className="flex items-center">

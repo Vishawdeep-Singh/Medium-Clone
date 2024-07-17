@@ -317,7 +317,7 @@ async function postComment (postId:string){
     }
 }
     return <div className={`flex    flex-col h-[100vh] `}>
-        <Appbar {...user}></Appbar>
+        <Appbar></Appbar>
 
         <div className={`w-[50%] m-auto pt-32 flex-shrink-0 overflow-y-sroll  z-10   ${isSidebarVisible ? '  opacity-60' : 'opacity-100'}`}>
             <div className="text-5xl font-extrabold">
