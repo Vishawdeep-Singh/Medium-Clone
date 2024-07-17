@@ -97,6 +97,12 @@ export const UserAtom = atom({
                   
                 }
               } catch (error:any) {
+                if(error.response){
+                  throw Error(`Error fetching user info ${error.response.data.message}`)
+                }
+                else{
+                  throw Error(`Error fetching user info: ${error.message}`)
+                }
                 console.error('Error fetching user info:', error.message);
         throw error;
                 
@@ -136,6 +142,14 @@ export const PostsAtom = atom<Post[]>({
                     throw new Error(`Failed to fetch posts: ${response.statusText}`);
                   }
                 } catch (error:any) {
+                  if(error.response){
+                    throw Error(`Failed to fetch posts ${error.response.data.message}`)
+                  }
+                  else{
+                    console.error('Error fetching posts:', error.message);
+                    throw new Error(`Failed to fetch posts. Please try again later. ${error.message}`);
+                   
+                  }
                   console.error('Error fetching posts:', error.message);
                   throw new Error('Failed to fetch posts. Please try again later.');
                   
@@ -148,3 +162,4 @@ export const followingStatusAtom = atom<Map<string, boolean>>({
   key: 'followingStatus',
   default: new Map(), // Initial value can be empty or pre-populated based on your logic
 });
+

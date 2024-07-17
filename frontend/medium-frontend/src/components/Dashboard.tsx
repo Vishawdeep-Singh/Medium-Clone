@@ -12,6 +12,7 @@ import { PropagateLoader, PulseLoader, ScaleLoader } from "react-spinners";
 import { Sidebar } from "./Sidebar";
 import { Posts } from "./Posts";
 import { usePosts, useUsers, useTags } from "../hooks/Hooks";
+import ErrorDisplay from "../pages/error";
 
 
 class User{
@@ -49,6 +50,7 @@ class User{
             followingId:user.id
         }, { headers });
         if(response.status!==200){
+          
             this.following.delete(user);
             user.followedBy.delete(this)
         }
@@ -57,7 +59,7 @@ class User{
        } catch (error:any) {
         this.following.delete(user);
         user.followedBy.delete(this)
-        console.error('Error in creating follow', error.message);
+        console.error('Error in creating follow', error.response.data.message);
       
        }
       }
@@ -88,7 +90,7 @@ class User{
        } catch (error:any) {
         this.following.add(user);
         user.followedBy.add(this)
-        console.error('Error in deleting follow', error.message);
+        console.error('Error in deleting follow', error.response.data.message);
        
        }
       }
@@ -265,7 +267,11 @@ const [user,SetUser]=useState({
 })
 
 const [Loadableuser,LoadableSetUser]=useRecoilStateLoadable(UserAtom);
+const [error, setError] = useState<string[]>([]);
 
+const addError = (errorMessage: string) => {
+  setError(prevErrors => [...prevErrors, errorMessage]);
+};
 
 useEffect(() => {
   // Check the state of loadableUser to determine UI state
@@ -278,7 +284,7 @@ useEffect(() => {
       SetUser(Loadableuser.contents); // Set user data from Recoil state
       break;
     case 'hasError':
-      console.error('Error loading user:', Loadableuser.contents.message);
+     addError(`Error loading user:, ${Loadableuser.contents.message}`);
       setIsLoading(false);
       break;
     default:
@@ -332,6 +338,13 @@ const [fills,setFills]=useState<Fills>(()=>{
                 setIsLoading(false)
             }
         } catch (error: any) {
+          if(error.response){
+            addError(`Error fetching user info: ${error.response.data.message}`);
+          }
+          else{
+            addError(`Error fetching user info: ${error.message}`);
+          }
+          
             console.error('Error fetching userInfo:', error.message);
             setIsLoading(false)
 
@@ -475,6 +488,7 @@ const SetSomePropertiesDueToUser = async()=>{
           }
         } catch (error:any) {
           console.error('Error fetching and setting some properties from it userInfo:', error.message);
+          addError(`Error fetching and setting properties: ${error.message}`);
           setIsLoading(false)
           
         }
@@ -529,7 +543,14 @@ try {
         throw new Error(`Failed save post: ${response.statusText}`);
       }
 } catch (error:any) {
+  if(error.response){
+    addError(`Error saving post: ${error.response.data.message}`);
+  }
+  else{
+    addError(`Error saving post: ${error.message}`);
+  }
     console.error('Error in saving post:', error.message);
+   
       
 }
 }
@@ -568,8 +589,20 @@ data-testid="loader"
         </div>
   }
 
-
+  if(postsError || tagsError ||usersError || error.length>0){
     return <div>
+        {error.length>0 && <ErrorDisplay messages={error}></ErrorDisplay>}
+{postsError && <ErrorDisplay messages={postsError}></ErrorDisplay>}
+{tagsError && <ErrorDisplay messages={tagsError}></ErrorDisplay>}
+{usersError && <ErrorDisplay messages={usersError}></ErrorDisplay>}
+    </div>
+  }
+  
+
+
+console.log(postsError)
+    return <div>
+     
  <Appbar></Appbar>
 
 

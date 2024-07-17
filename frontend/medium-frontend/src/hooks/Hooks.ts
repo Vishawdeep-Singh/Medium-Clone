@@ -130,8 +130,17 @@ export const usePosts=()=>{
                     setIsLoading(false)
                   }
                 } catch (error:any) {
+
+                    if(error.response){
+                        setError(`Error fetching users:, ${error.response.data.message}`)
+                    }
+                    else{
+                        setError(`Error fetching users:, ${error.message}`)
+                    }
                   console.error('Error fetching users:', error.message);
                   setIsLoading(false)
+                 
+                  
                   
                 }
         }
@@ -171,7 +180,14 @@ const [isLoading, setIsLoading] = useState(true);
                         setIsLoading(false)
                       }
             } catch (error:any) {
+                if(error.response){
+                    setError(`Error fetching tags: ${error.response.data.message}`)
+                }
+                else{
+                    setError(`Error fetching tags: ${error.message}`)
+                }
                 console.error('Error fetching tags:', error.message);
+             
                       setIsLoading(false)
             }
             }
