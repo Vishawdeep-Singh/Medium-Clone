@@ -10,6 +10,7 @@ import { Sidebar } from "../components/Sidebar";
 import { useRecoilState, useRecoilStateLoadable } from "recoil";
 import { useUsers, useTags, usePosts } from "../hooks/Hooks";
 import { followingStatusAtom, UserAtom } from "../states/atoms";
+import ErrorDisplay from "./error";
 class User{
        
   id: string;
@@ -238,7 +239,11 @@ export const SearchPosts = ()=>{
     const[followingPosts,setFollowingPosts]=useState<Post1[]>([])
     const [isLoading, setIsLoading] = useState(true);
     const [searchPosts,setsearchPosts]=useState<Post[]>([]);
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<string[]>([]);
+
+    const addError = (errorMessage: string) => {
+      setError(prevErrors => [...prevErrors, errorMessage]);
+    };
 
     const {posts,isLoading:postsLoading,error:postsError}=usePosts();
     const {users,isLoading:usersLoading,error:usersError}=useUsers();
@@ -265,6 +270,7 @@ useEffect(() => {
       SetUser(Loadableuser.contents); // Set user data from Recoil state
       break;
     case 'hasError':
+      addError(`Error loading user: ${Loadableuser.contents.message}`)
       console.error('Error loading user:', Loadableuser.contents.message);
       setIsLoading(false);
       break;
@@ -445,6 +451,7 @@ useEffect(() => {
              setIsLoading(false)
            }
          } catch (error:any) {
+          addError(`Error fetching and setting some properties from it userInfo: ${error.message}`)
            console.error('Error fetching and setting some properties from it userInfo:', error.message);
            setIsLoading(false)
            
@@ -499,6 +506,12 @@ useEffect(() => {
          throw new Error(`Failed save post: ${response.statusText}`);
        }
  } catch (error:any) {
+  if(error.response){
+    addError(`Failed to save post: ${error.response.data.message} `)
+  }
+  else{
+  addError(`Failed save post: ${error.message}`)
+  }
      console.error('Error in saving post:', error.message);
        
  }
@@ -542,6 +555,15 @@ if (isLoading) {
         <LoadingSpinner></LoadingSpinner>
         </div>
   }
+  if(postsError || tagsError ||usersError || error.length>0){
+    return <div>
+        {error.length>0 && <ErrorDisplay messages={error}></ErrorDisplay>}
+{postsError && <ErrorDisplay messages={postsError}></ErrorDisplay>}
+{tagsError && <ErrorDisplay messages={tagsError}></ErrorDisplay>}
+{usersError && <ErrorDisplay messages={usersError}></ErrorDisplay>}
+    </div>
+  }
+  
 
     return <div>
  <Appbar></Appbar>

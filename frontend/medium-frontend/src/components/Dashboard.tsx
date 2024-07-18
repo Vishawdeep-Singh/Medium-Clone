@@ -479,7 +479,9 @@ const SetSomePropertiesDueToUser = async()=>{
             fillobj.forEach((id: string)=>{
                 fills[id] = "black"
               })
+              
               localStorage.setItem("fills",JSON.stringify(fills))
+              setFills(fills)
               setIsLoading(false)
             
           } else {

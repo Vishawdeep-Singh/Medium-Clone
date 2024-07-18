@@ -6,6 +6,7 @@ import { LoadingSpinner } from "./LoadingSpinner";
 import { GrayButton } from "../components/GrayButton";
 import { useTags } from "../hooks/Hooks";
 import { BarLoader } from "react-spinners";
+import ErrorDisplay from "./error";
 
 
 export const ExploreTags = ()=>{
@@ -52,6 +53,10 @@ export const ExploreTags = ()=>{
         isLoading: boolean;
         error: string | null;
       }
+      const [error, setError] = useState<string[]>([]);
+const addError = (errorMessage: string) => {
+    setError(prevErrors => [...prevErrors, errorMessage]);
+  };
       const {tags,isLoading:tagsLoading,error:tagsError}:UseTagsResult=useTags();
     const [isLoading, setIsLoading] = useState(true);
     const scoller= useRef<HTMLDivElement>(null);
@@ -110,8 +115,8 @@ export const ExploreTags = ()=>{
                         setContainsArr(containsArr1)
                         
 
-                    } catch (error) {
-                        
+                    } catch (error:any) {
+                        addError(`Failed to search the tags ${error.message}`)
                     }
                   }
                   useEffect(()=>{
@@ -127,6 +132,15 @@ export const ExploreTags = ()=>{
         </div>
                   }
 
+            
+                  if(tagsError ||error.length>0){
+                    return <div>
+                        {error.length>0 && <ErrorDisplay messages={error}></ErrorDisplay>}
+                
+                {tagsError && <ErrorDisplay messages={tagsError}></ErrorDisplay>}
+                
+                    </div>
+                  }
                   
     return <div>
         <Appbar></Appbar>

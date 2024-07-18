@@ -5,6 +5,7 @@ import { createPostType } from "@johnwick002992/common-medium-app";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { SetterOrUpdater, useRecoilState, useRecoilStateLoadable, useRecoilValue, useRecoilValueLoadable, useSetRecoilState } from "recoil";
 import { PostsAtom, UserAtom } from "../states/atoms";
+import ErrorDisplay from "./error";
 interface Post1 {
   id: string;
   title: string;
@@ -80,7 +81,10 @@ export const NewBlog = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoading2, setIsLoading2] = useState(false);
   
-  
+  const [error, setError] = useState<string[]>([]);
+  const addError = (errorMessage: string) => {
+      setError(prevErrors => [...prevErrors, errorMessage]);
+    };
   const [blogData,setBlogData]=useState<createPostType>({
     title:"",
     content:"",
@@ -114,6 +118,12 @@ export const NewBlog = () => {
           
         }
       } catch (error:any) {
+        if(error.response){
+          addError(`Failed to create post :  ${error.response.data.message}`)
+        }
+        else{
+          addError(`Error creating posts:  ${error.message}`)
+        }
         console.error('Error creating posts:', error.response.data.message);
         setIsLoading2(false)
         
@@ -132,6 +142,13 @@ export const NewBlog = () => {
         return <div>
           <LoadingSpinner></LoadingSpinner>
         </div>
+      }
+
+      if(error.length>0){
+        return <div>
+          <ErrorDisplay messages={error}></ErrorDisplay>
+        </div>
+        
       }
   return (
     <div className="flex flex-col items-center">

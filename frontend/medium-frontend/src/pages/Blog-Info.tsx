@@ -3,6 +3,9 @@ import { Appbar } from "../components/Appbar"
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { LoadingSpinner } from "./LoadingSpinner";
+import { useRecoilStateLoadable } from "recoil";
+import { UserAtom } from "../states/atoms";
+import ErrorDisplay from "./error";
 
 
 
@@ -51,14 +54,33 @@ export const BlogInfo = () => {
         postId=postId1
     }
     const [post, setPost] = useState<Post>(defaultPost);
-    const [error, setError] = useState<string | null>(null);
-    const [user,SetUser]=useState({
-        id:"",
-        email:" ",
-        name:" ",
-        savedPosts:[]
 
-    })
+    const [user,SetUser]=useState({
+        id: "",
+        email: "",
+        name: "",
+        savedPosts: []
+      })
+      
+      const [Loadableuser,LoadableSetUser]=useRecoilStateLoadable(UserAtom);
+      useEffect(() => {
+        // Check the state of loadableUser to determine UI state
+        switch (Loadableuser.state) {
+          case 'loading':
+            setIsLoading(true);
+            break;
+          case 'hasValue':
+            setIsLoading(false);
+            SetUser(Loadableuser.contents); // Set user data from Recoil state
+            break;
+          case 'hasError':
+           addError(`Error loading user:, ${Loadableuser.contents.message}`);
+            setIsLoading(false);
+            break;
+          default:
+            break;
+        }
+      }, [Loadableuser]);
     const [isLoading, setIsLoading] = useState(true);
     const [para, SetPara] = useState<string[]>([]);
     const [likes, SetLikes] = useState(0);
@@ -70,6 +92,10 @@ export const BlogInfo = () => {
     const [isSidebarVisible, setIsSidebarVisible] = useState(false);
     const [commentPosted,setCommentPosted]=useState(false)
    
+    const [error, setError] = useState<string[]>([]);
+const addError = (errorMessage: string) => {
+    setError(prevErrors => [...prevErrors, errorMessage]);
+  };
     const [fills,setFills]=useState<Fills>(()=>{
         const savedFills= localStorage.getItem("fills");
         return savedFills? JSON.parse(savedFills) : {}
@@ -112,7 +138,14 @@ export const BlogInfo = () => {
              throw new Error(`Failed save post: ${response.statusText}`);
            }
      } catch (error:any) {
-         console.error('Error in saving post:', error.message);
+        if(error.response){
+            addError(`Error in saving post ${error.response.data.message}`)
+        }
+        else{
+            console.error('Error in saving post:', error.message);
+            addError(`Error in saving post:, ${error.message}`)
+        }
+        
            
      }
      }
@@ -120,41 +153,48 @@ export const BlogInfo = () => {
 
 
 
-     const fetchUser = async()=>{
+     const SetSomePropertiesDueToUser = async () => {
         try {
-            const token:string | null = localStorage.getItem("token");
-            if(!token){
-                throw new Error("Token Not Found")
-            }
+          setIsLoading(true)
     
-            const headers = {
-                'authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json', // Optional: Set other headers if needed
-              };
-              const response = await axios.get('http://localhost:8787/api/v1/user', { headers });
     
-              if (response.status === 200) {
-                SetUser(response.data); // Assuming response.data is an array of posts
-                const savePostsIds = response.data.savedPosts;
-                const fillobj =  savePostsIds.map((post:any)=>{
-                  return post.id
-                });
-                let fills:Fills ={}
-                fillobj.forEach((id: string)=>{
-                    fills[id] = "black"
-                  })
-                  localStorage.setItem("fills",JSON.stringify(fills))
-                
-              } else {
-                throw new Error(`Failed to fetch posts: ${response.statusText}`);
-                setIsLoading(false)
-              }
-            } catch (error:any) {
-              console.error('Error fetching posts:', error.message);
-              setIsLoading(false)
-              
-            }
-    }
+          if (user) {
+            // Assuming response.data is an array of posts
+    
+    
+            const savePostsIds = user.savedPosts;
+            const fillobj = savePostsIds.map((post: any) => {
+              return post.id
+            });
+            let fills: Fills = {}
+            fillobj.forEach((id: string) => {
+              fills[id] = "black"
+            })
+            localStorage.setItem("fills", JSON.stringify(fills))
+            setIsLoading(false)
+    
+          } else {
+            throw new Error(`Failed to fetch userInfo:`);
+            setIsLoading(false)
+          }
+        } catch (error: any) {
+          addError(`Error fetching and setting some properties from it userInfo:, ${error.message}`);
+          setIsLoading(false)
+    
+        }
+      }
+    
+    
+    
+    
+    
+    
+    
+      useEffect(() => {
+    
+        SetSomePropertiesDueToUser()
+    
+      }, [user]);
 
 
 
@@ -180,14 +220,21 @@ export const BlogInfo = () => {
                 setComments(response.data.comments)
                 
                
-                setError(null);
+               
             } else {
                 throw new Error(`Failed to fetch post: ${response.statusText}`);
             }
         } catch (error: any) {
+            if(error.response){
+                addError(`Failed to fecth post data ${error.response.data.message}`)
+            }
+            else{
+                console.error('Error fetching posts:', error.message)
+                addError(`Failed to fetch post data ${error.message}`)
+            }
             console.error('Error fetching posts:', error.message);
            
-            setError('Failed to fetch post. Please try again later.');
+          
             setIsLoading(false);
         }
     }
@@ -220,7 +267,14 @@ export const BlogInfo = () => {
             }
         } catch (error: any) {
             SetLikes(prevLikes => prevLikes - 1);
-            console.error('Error liking posts:', error.message);
+            if(error.response){
+                addError(`Failed to like the post  ${error.response.data.message}`)
+            }
+            else{
+                console.error('Error liking posts:', error.message);
+                addError(`Failed to like the post ${error.message}`)
+            }
+        
 
 
         }
@@ -230,9 +284,6 @@ export const BlogInfo = () => {
         fetchPost()
     }, [postId,commentPosted])
 
-    useEffect(()=>{
-        fetchUser()
-    },[])
 
     useEffect(()=>{
         if(responseButton.current){
@@ -252,7 +303,7 @@ export const BlogInfo = () => {
     useEffect(() => {
         const fetchData = async () => {
           try {
-            await Promise.all([fetchUser(), fetchPost()]);
+            await Promise.all([fetchPost()]);
           } catch (error) {
             console.error("Error fetching data:", error);
           } finally {
@@ -312,10 +363,24 @@ async function postComment (postId:string){
                 throw new Error(`Failed to comment post: ${response.statusText}`);
             }
     } catch (error:any) {
-        console.error("Cannot save post"+error.message);
+        if(error.response){
+            console.error("Cannot save post"+error.message);
+            addError(`Failed to comment on post ${error.response.data.message}`)
+        }
+        else{
+            addError(`Failed to comment on post ${error.message}`)
+        }
+        
         
     }
 }
+
+if(error.length>0){
+    return <div>
+        {error.length>0 && <ErrorDisplay messages={error}></ErrorDisplay>}
+
+    </div>
+  }
     return <div className={`flex    flex-col h-[100vh] `}>
         <Appbar></Appbar>
 

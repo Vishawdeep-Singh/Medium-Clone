@@ -113,7 +113,7 @@ export const Appbar = () => {
     const [containsArr,setContainsArr]=useState<ContainsArray[]>([]);
    
     const Gotouser=()=>{
-      const userId:string = "owner";
+      const userId:string = user.id;
       navigate(`/userInfo/${userId}`)
     }
 

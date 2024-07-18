@@ -89,7 +89,7 @@ export const UserAtom = atom({
                 const response = await axios.get('http://localhost:8787/api/v1/user', { headers });
       
                 if (response.status === 200) {
-                  return response.data; // Assuming response.data is an array of posts
+                  return response.data; 
                  
                   
                 } else {

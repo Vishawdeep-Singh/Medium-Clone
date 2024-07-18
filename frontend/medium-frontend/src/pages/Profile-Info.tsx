@@ -3,6 +3,9 @@ import { Appbar } from "../components/Appbar"
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { LoadingSpinner } from "./LoadingSpinner";
+import { useRecoilStateLoadable } from "recoil";
+import { UserAtom } from "../states/atoms";
+import ErrorDisplay from "./error";
 
 class User{
        
@@ -230,6 +233,11 @@ export const ProfileInfo = () => {
         author: Author
       }
       
+      const [error, setError] = useState<string[]>([]);
+
+const addError = (errorMessage: string) => {
+  setError(prevErrors => [...prevErrors, errorMessage]);
+};
     const [posts,SetPosts] = useState<Post[]>([]);
     const[allPosts,setAllPosts]=useState<Post1[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -241,9 +249,33 @@ export const ProfileInfo = () => {
         id:"",
         email:" ",
         name:" ",
+        posts:[],
         savedPosts:[]
 
     })
+
+    const [Loadableuser,LoadableSetUser]=useRecoilStateLoadable(UserAtom);
+    
+    useEffect(() => {
+        // Check the state of loadableUser to determine UI state
+        switch (Loadableuser.state) {
+          case 'loading':
+            setIsLoading(true);
+            break;
+          case 'hasValue':
+            setIsLoading(false);
+            SetOwnerUser(Loadableuser.contents); // Set user data from Recoil state
+            break;
+          case 'hasError':
+           addError(`Error loading user:, ${Loadableuser.contents.message}`);
+            setIsLoading(false);
+            break;
+          default:
+            break;
+        }
+      }, [Loadableuser]);
+      
+    
     
 
     const [socialGraphData, setSocialGraphData] = useState<Map<string, User>>(new Map());
@@ -253,7 +285,8 @@ export const ProfileInfo = () => {
         id: "",
         email: " ",
         name: " ",
-        savedPosts: []
+        savedPosts: [],
+        posts:[]
 
     })
 
@@ -299,17 +332,19 @@ export const ProfileInfo = () => {
   
 
     
-
-    if(userId==="owner"){
-        useEffect(() => {
+useEffect(()=>{
+    if(userId===ownerUser.id){
+        
             fetchUser1()
-        }, [user.id])
+        
     }
     else{
-        useEffect(() => {
+      
             fetchUser()
-        }, [user.id]) 
+      
     }
+},[ownerUser,user,userId])
+    
     let isFollowing= followingStatus.get(userId)
     const fetchUser = async () => {
         try {
@@ -338,38 +373,37 @@ export const ProfileInfo = () => {
                 setIsLoading(false)
             }
         } catch (error: any) {
-            console.error('Error fetching userInfo:', error.message);
+            if(error.response){
+                
+                addError(`Failed to fetch userInfo: ${error.response.data.message}`)
+            }
+            else{
+                console.error('Error fetching userInfo:', error.message);
+                addError(`Failed to fetch userInfo ${error.message}`)
+            }
+          
             setIsLoading(false)
 
         }
     }
     const fetchUser1 = async () => {
         try {
-            const token: string | null = localStorage.getItem("token");
-            if (!token) {
-                throw new Error("Token Not Found")
-            }
-
-            const headers = {
-                'authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json', // Optional: Set other headers if needed
-            };
-            const response = await axios.get('http://localhost:8787/api/v1/user',{ headers });
-            console.log(response)
-            if (response.status === 200) {
-                SetOwnerUser(response.data); // Assuming response.data is an array of posts
-                SetPosts(response.data.posts);
+            
+            if (user) {
+                 // Assuming response.data is an array of posts
+                SetPosts(ownerUser.posts);
                 
-                setSavedPosts(response.data.savedPosts)
+                setSavedPosts(ownerUser.savedPosts)
                 setIsLoading(false);
                 setWhoseInfo("owner")
 
 
             } else {
-                throw new Error(`Failed to fetch userInfo: ${response.statusText}`);
+                throw new Error(`Failed to fetch userInfo`);
                 setIsLoading(false)
             }
         } catch (error: any) {
+            addError(`Failed to execute fetchUser1 ${error.message}`)
             console.error('Error fetching userInfo:', error.message);
             setIsLoading(false)
 
@@ -392,11 +426,22 @@ export const ProfileInfo = () => {
 
 
 const[followers,setFollowers]=useState<number|undefined>()
+
+
     if (isLoading) {
         return <div className="absolute top-[20rem] left-[45rem]">
             <LoadingSpinner></LoadingSpinner>
             </div>
       }
+      if( error.length>0){
+        return <div>
+            {error.length>0 && <ErrorDisplay messages={error}></ErrorDisplay>}
+    
+        </div>
+      }
+      
+
+
     return <div>
         <Appbar></Appbar>
 

@@ -9,6 +9,7 @@ import { useRecoilStateLoadable } from "recoil";
 import { UserAtom } from "../states/atoms";
 import { PulseLoader } from "react-spinners";
 import { Posts } from "../components/Posts";
+import ErrorDisplay from "./error";
 
 export const TagPosts = () => {
 
@@ -55,6 +56,10 @@ export const TagPosts = () => {
     isLoading: boolean;
     error: string | null;
   }
+  const [error, setError] = useState<string[]>([]);
+  const addError = (errorMessage: string) => {
+      setError(prevErrors => [...prevErrors, errorMessage]);
+    };
   const { tags, isLoading: tagsLoading, error: tagsError }: UseTagsResult = useTags();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -87,6 +92,7 @@ export const TagPosts = () => {
         break;
       case 'hasError':
         console.error('Error loading user:', Loadableuser.contents.message);
+        addError(`Error in loading user ${Loadableuser.contents.message}`)
         setIsLoading(false);
         break;
       default:
@@ -129,6 +135,12 @@ export const TagPosts = () => {
         setIsLoading(false)
       }
     } catch (error: any) {
+      if(error.response){
+        addError(`Error fetching and setting some properties from it userInfo: ${error.response.data.message}`)
+      }
+      else{
+        addError(`Error fetching and setting some properties from it userInfo: ${error.message}`)
+      }
       console.error('Error fetching and setting some properties from it userInfo:', error.message);
       setIsLoading(false)
 
@@ -175,7 +187,14 @@ export const TagPosts = () => {
         throw new Error(`Failed to fetch tagPosts: ${response.statusText}`);
       }
     } catch (error: any) {
-      console.error('Error fetching tagPosts:', error.message);
+      if(error.response){
+        addError(`Failed to fetch tagPosts ${error.response.data.message}`)
+      }
+      else{
+        console.error('Error fetching tagPosts:', error.message);
+        addError(`Error fetching tagPosts: ${error.message}`)
+      }
+     
       setIsLoading(false)
     }
   }
@@ -263,11 +282,27 @@ export const TagPosts = () => {
         throw new Error(`Failed save post: ${response.statusText}`);
       }
     } catch (error: any) {
-      console.error('Error in saving post:', error.message);
+      if(error.response){
+        addError(`Failed save post ${error.response.data.message}`)
+      }
+      else{
+        console.error('Error in saving post:', error.message);
+        addError(`Failed to save post ${error.message}`)
+      }
+     
 
     }
   }
 
+
+  if( tagsError || error.length>0){
+    return <div>
+        {error.length>0 && <ErrorDisplay messages={error}></ErrorDisplay>}
+
+{tagsError && <ErrorDisplay messages={tagsError}></ErrorDisplay>}
+
+    </div>
+  }
 
   if (isLoading) {
     return <LoadingSpinner></LoadingSpinner>
