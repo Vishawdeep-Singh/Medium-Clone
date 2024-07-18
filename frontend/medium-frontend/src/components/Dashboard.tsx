@@ -577,7 +577,7 @@ const override: CSSProperties = {
 
 if (isLoading) {
     console.log(isLoading)
-    return <div className="absolute top-[20rem] left-[45rem]">
+    return <div className="flex justify-center items-center h-lvh">
        <PropagateLoader
 color={"#000000"}
 loading={true}
@@ -609,16 +609,16 @@ console.log(postsError)
 
 
 <div>
-        <div className=" relative grid grid-cols-10 h-lvh overflow-hidden">
-        <div className=" col-span-7 overflow-y-auto">
+        <div className=" relative md:grid md:grid-cols-10 h-lvh md:overflow-hidden">
+        <div className=" md:col-span-7 overflow-y-auto">
             <div className="flex h-20">
 
             </div>
-            <div className="grid grid-rows  px-20 mt-10 overflow-y-auto">
-                <div className="flex mx-[30px] mb-10 justify-between text-md font-light">
+            <div className="grid md:grid-rows  md:px-20 mt-10 overflow-y-auto">
+                <div className="flex mx-[30px] mb-10 justify-between text-sm md:text-md font-light">
                     <div onClick={()=>{
                         setForYouPosts(true)
-                    }}  className={`  hover:text-black cursor-pointer ${forYouPosts ? 'font-bold text-xl text-black' : ''}`}>
+                    }}  className={`  hover:text-black cursor-pointer ${forYouPosts ? 'font-bold text-lg md:text-xl text-black' : ''}`}>
                         For You
                     </div>
                     <div onClick={async ()=>{
@@ -641,7 +641,7 @@ console.log(postsError)
                            
                             }
                             console.log(followingPosts)
-                    }} className={` hover:text-black cursor-pointer ${forYouPosts ? '' : 'font-bold text-black text-xl'}`}>
+                    }} className={` hover:text-black cursor-pointer ${forYouPosts ? '' : 'font-bold text-black text-lg md:text-xl'}`}>
                         Following
                     </div>
                 </div>

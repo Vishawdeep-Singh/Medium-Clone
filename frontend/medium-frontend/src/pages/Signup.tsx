@@ -59,8 +59,8 @@ name:"",
 password:""
     });
     const navigate = useNavigate();
-    return <div>
-        <div className="grid grid-cols-2">
+    return <div >
+        <div className=" md:grid md:grid-cols-2">
             <div>
             <div className=" h-screen flex justify-center items-center">
         <div className="flex flex-col justify-center">
@@ -99,7 +99,8 @@ password:""
         </div>
             </div>
             </div>
-            <div>
+            <div className=" sr-only md:not-sr-only">
+    
                 <Quote></Quote>
             </div>
             

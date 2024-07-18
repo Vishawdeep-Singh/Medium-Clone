@@ -6,6 +6,7 @@ import { LoadingSpinner } from "./LoadingSpinner";
 import { useRecoilStateLoadable } from "recoil";
 import { UserAtom } from "../states/atoms";
 import ErrorDisplay from "./error";
+import { GridLoader } from "react-spinners";
 
 
 
@@ -200,6 +201,7 @@ const addError = (errorMessage: string) => {
 
     async function fetchPost() {
         try {
+            setIsLoading(true)
             const token: string | null = localStorage.getItem("token");
             if (!token) {
                 throw new Error("Token Not Found")
@@ -218,7 +220,7 @@ const addError = (errorMessage: string) => {
                 SetPara(paragraphs);
                 SetLikes(response.data.likes)
                 setComments(response.data.comments)
-                
+                setIsLoading(false)
                
                
             } else {
@@ -300,18 +302,7 @@ const addError = (errorMessage: string) => {
         
     },[commentValue])
 
-    useEffect(() => {
-        const fetchData = async () => {
-          try {
-            await Promise.all([fetchPost()]);
-          } catch (error) {
-            console.error("Error fetching data:", error);
-          } finally {
-            setIsLoading(false); // Set loading to false after data fetching
-          }
-        };
-        fetchData();
-      }, []);
+   
     const formatDate = (dateString: string): string => {
         const dateObj = new Date(dateString);
         const year = dateObj.getFullYear();
@@ -321,8 +312,17 @@ const addError = (errorMessage: string) => {
     };
 
     if (isLoading) {
-        return <div className="absolute top-[20rem] left-[45rem]">
-            <LoadingSpinner></LoadingSpinner>
+        return <div className="flex justify-center items-center h-lvh">
+           <GridLoader
+color={"#000000"}
+loading={true}
+
+size={30}
+aria-label="Loading Spinner"
+data-testid="loader"
+
+
+/>
         </div>
     }
 
@@ -375,37 +375,38 @@ async function postComment (postId:string){
     }
 }
 
+
 if(error.length>0){
     return <div>
         {error.length>0 && <ErrorDisplay messages={error}></ErrorDisplay>}
 
     </div>
   }
-    return <div className={`flex    flex-col h-[100vh] `}>
+    return <div className={`flex  items-center ${isSidebarVisible ? '   overflow-hidden' : ''}  flex-col h-[100vh] `}>
         <Appbar></Appbar>
 
-        <div className={`w-[50%] m-auto pt-32 flex-shrink-0 overflow-y-sroll  z-10   ${isSidebarVisible ? '  opacity-60' : 'opacity-100'}`}>
-            <div className="text-5xl font-extrabold">
+        <div className={`md:w-[50%] w-[90%] m-auto pt-32 flex-shrink-0   z-10   ${isSidebarVisible ? '  opacity-60 overflow-hidden' : 'opacity-100 overflow-y-sroll'}`}>
+            <div className="md:text-5xl text-2xl font-extrabold">
                 {post?.title}
             </div>
 
-            <img className="mt-[5rem]" src="https://images.unsplash.com/photo-1620030537215-9ef4d9c0d3ab?q=80&w=2875&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" />
+            <img className="mt-[5rem] ml-20 md:ml-0  md:w-full w-[50%]" src="https://images.unsplash.com/photo-1620030537215-9ef4d9c0d3ab?q=80&w=2875&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" />
 
 
 
-            <div className="flex px-7 py-3 justify-between border-y-[1px] items-center my-12">
+            <div className="flex   md:px-7 px-3 py-3 justify-between border-y-[1px] items-center my-12">
 
                 {/* LEft icons */}
                 <div className="flex items-center space-x-10">
-                    <div className="text-sm font-light">
+                    <div className="md:text-sm text-xs font-light">
                         {formatDate(post?.date)}
                     </div>
                     <div className="flex  space-x-3">
-                        <svg onClick={likePost} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`size-6 cursor-pointer ${animate ? 'animate-likeJump' : ''}`}>
+                        <svg onClick={likePost} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`md:size-6 size-5 cursor-pointer ${animate ? 'animate-likeJump' : ''}`}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V2.75a.75.75 0 0 1 .75-.75 2.25 2.25 0 0 1 2.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282m0 0h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 0 1-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 0 0-1.423-.23H5.904m10.598-9.75H14.25M5.904 18.5c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 0 1-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 9.953 4.167 9.5 5 9.5h1.053c.472 0 .745.556.5.96a8.958 8.958 0 0 0-1.302 4.665c0 1.194.232 2.333.654 3.375Z" />
                         </svg>
 
-                        <div>
+                        <div className="text-sm md:text-md">
                             {likes}
                         </div>
 
@@ -413,10 +414,10 @@ if(error.length>0){
                     <div className=" flex  space-x-3">
                         <svg onClick={()=>{
                         setIsSidebarVisible(true)
-                    }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 cursor-pointer z-20">
+                    }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="md:size-6 size-5 cursor-pointer z-20">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z" />
                         </svg>
-                        <div>
+                        <div className="text-sm md:text-md">
                             {post.comments.length}
                         </div>
 
@@ -425,9 +426,9 @@ if(error.length>0){
 
                 {/* Right icons */}
 
-                <div className="flex items-center space-x-9">
+                <div className="flex items-center md:space-x-9">
                     <div>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill={fills[postId] || "none"} viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 cursor-pointer" onClick={()=>{
+                        <svg xmlns="http://www.w3.org/2000/svg" fill={fills[postId] || "none"} viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="md:size-6 size-5 cursor-pointer" onClick={()=>{
                             savePost(postId)
                         }}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
@@ -448,7 +449,7 @@ if(error.length>0){
 
 
 
-            <div className="space-y-16 font-source-serif font-regular text-gray-600 text-xl">
+            <div className="space-y-16 font-source-serif font-regular text-gray-600 text-lg md:text-xl">
                 {para.map((paras, index) => {
                     return <p key={index}>{paras}</p>
                 })}
@@ -457,7 +458,7 @@ if(error.length>0){
 
 {/* sidebar */}
 
-      <div  className={`z-40  h-lvh w-[25rem] flex flex-col  space-y-28  shadow-md shadow-black overflow-scroll fixed ease-in-out transition-all delay-100 duration-300    bg-white px-5 ${isSidebarVisible ? 'right-0':'right-[-25rem]'}`}>
+      <div  className={`z-40  h-lvh md:w-[25rem] w-full  border- flex flex-col  space-y-28  shadow-md shadow-black overflow-scroll fixed ease-in-out transition-all delay-100 duration-300    bg-white px-5 ${isSidebarVisible ? 'right-0':'right-[-25rem]'}`}>
                 <div className="flex justify-between px-5 pt-10">
                    <div className="text-2xl font-mono font-bold">
                     Responses ({post.comments.length})
@@ -470,7 +471,7 @@ if(error.length>0){
                 </div>
 
 
-                <div className=" min-h-52 bg-[	#fffff2] shadow-lg  shadow-slate-400 flex  flex-col">
+                <div className=" min-h-52 bg-[	#fffff2] shadow-lg rounded-md  shadow-slate-400 flex  flex-col">
                     <div className="p-5 flex items-center  ">
                         <div className="h-10 w-10 rounded-full bg-black">
 

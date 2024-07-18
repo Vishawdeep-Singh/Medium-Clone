@@ -93,7 +93,7 @@ export const Sidebar:React.FC<SidebarProps> = ({ tags, tagsLoading, users, user,
     const navigate = useNavigate();
   console.log(followingStatus)
     return (
-      <div className="border-l border-slate-200 col-span-3 overflow-y-auto">
+      <div className="border-l border-slate-200 hidden md:block md:col-span-3 overflow-y-auto">
         <div className="flex flex-col justify-start ml-10">
           <div className="font-medium pt-28">
             Recommended topics

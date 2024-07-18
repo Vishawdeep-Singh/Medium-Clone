@@ -67,7 +67,7 @@ export const Signin=()=>{
         password:""
     })
     return <div>
-        <div className="grid grid-cols-2">
+        <div className="md:grid md:grid-cols-2">
             <div>
             <div className=" h-screen flex justify-center items-center">
         <div className="flex flex-col justify-center">
@@ -102,7 +102,7 @@ export const Signin=()=>{
         </div>
             </div>
             </div>
-            <div>
+            <div className=" not-sr-only md:not-sr-only">
                 <Quote></Quote>
             </div>
             

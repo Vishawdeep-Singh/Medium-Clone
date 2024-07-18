@@ -20,12 +20,14 @@ try {
         name:true,
         posts:{
             include:{
-                author:true
+                author:true,
+                comments:true
             }
         },
         savedPosts:{
             include:{
-                author:true
+                author:true,
+                comments:true
             }
         },
         

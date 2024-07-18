@@ -151,17 +151,20 @@ export const NewBlog = () => {
         
       }
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center w-screen">
 
         {/* APp bar */}
-      <div className="flex   border-solid border-black h-[57px]  items-center w-[70%] m-auto pt-16">
-        <div className="flex items-center mr-[40rem]">
-          <div className="text-black font-body text-6xl font-extrabold ml-3 antialiased hover:subpixel-antialiased">
+      <div className="flex   border-solid border-black h-[57px]  items-center w-full md:w-[70%] m-auto pt-16">
+        <div className="flex items-center mr-[6rem] md:mr-[40rem]">
+          <div
+          onClick={()=>{
+            navigate("/blog")
+          }} className="text-black font-body text-3xl md:text-6xl font-extrabold ml-3 antialiased hover:subpixel-antialiased">
             Thought
           </div>
         </div>
 
-        <div className="flex items-center w-[20%] space-x-7">
+        <div className="flex items-center md:w-[20%] space-x-7">
           <button onClick={createBlog} className="bg-green-600 text-white rounded-full px-3 py-2 text-xs">
             Publish
           </button>
@@ -173,17 +176,15 @@ export const NewBlog = () => {
         <span className="sr-only">Open user menu</span>
         <img className="w-8 h-8 rounded-full" src="https://mir-s3-cdn-cf.behance.net/project_modules/1400/1510c2139933299.62399ca03fe5c.png" alt="user photo"/>
       </button>
-        {dropdown && <div  className="z-50 font-medium text-black absolute top-5  right-[-1rem] my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg border-2 border-black shadow-md dark:bg-gray-700 dark:divide-gray-600 transition-opacity duration-300 ease-in-out ">
+        {dropdown && <div  className="z-50 font-medium text-black absolute top-5 right-[-0.5rem] md:right-[-1rem] my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg border-2 border-black shadow-md dark:bg-gray-700 dark:divide-gray-600 transition-opacity duration-300 ease-in-out ">
         <div className="px-4 py-3">
             
-        {isLoading ? (
-    <span>Loading...</span>
-  ) : (
-    <>
+     
+   
       <span className="block text-sm text-gray-900 dark:text-white">{user.name}</span>
       <span className="block text-sm text-gray-500 truncate dark:text-gray-400">{user.email}</span>
-    </>
-  )}
+   
+  
         </div>
         <ul className="py-2" aria-labelledby="user-menu-button">
           <li>
@@ -207,7 +208,7 @@ export const NewBlog = () => {
 
     {/* Form */}
 
-    <div className="w-[70%] mt-48 pl-28">
+    <div className="md:w-[70%] w-full mt-24 md:mt-48 pl-10 md:pl-28">
     <textarea onChange={(e)=>{
               setBlogData(c => ({
                 ...c,
@@ -215,7 +216,7 @@ export const NewBlog = () => {
               }))
             }} rows={1} onInput={handleInput}
   placeholder="Title"
-  className=" focus:border-l-2 focus:border-gray-600 focus:outline-none text-gray-900 text-5xl  block p-2.5 resize-none w-[90%] font-body"
+  className=" focus:border-l-2 focus:border-gray-600 focus:outline-none text-gray-900 md:text-5xl text-3xl  block p-2.5 resize-none w-[90%] font-body"
   required
  
 />
@@ -225,7 +226,7 @@ export const NewBlog = () => {
                 ...c,
                 content:e.target.value
               }))
-            }}  id="editor" rows={1} onInput={handleInput} className=" focus:outline-none focus:border-l-2 focus:border-gray-600 mt-16 w-[90%]   text-gray-900   block p-2.5 resize-none  font-body text-2xl"
+            }}  id="editor" rows={1} onInput={handleInput} className=" focus:outline-none focus:border-l-2 focus:border-gray-600 mt-16 w-[90%]   text-gray-900   block p-2.5 resize-none  font-body text-xl md:text-2xl"
         placeholder="Tell Us your story ..." required />
 
             <input onChange={(e)=>{
@@ -233,7 +234,7 @@ export const NewBlog = () => {
                 ...c,
                 tags:e.target.value
               }))
-            }} type="text" placeholder="Tags..." className=" focus:border-l-2 focus:border-gray-600  w-[65%] h-10 focus:outline-none block font-body text-2xl p-3 mt-32"/>
+            }} type="text" placeholder="Tags..." className=" focus:border-l-2 focus:border-gray-600  md:w-[65%] h-10 focus:outline-none block font-body text-xl md:text-2xl p-3 mt-32"/>
     </div>
 
 
