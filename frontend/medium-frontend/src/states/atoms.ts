@@ -86,7 +86,7 @@ export const UserAtom = atom({
                   'authorization': `Bearer ${token}`,
                   'Content-Type': 'application/json', // Optional: Set other headers if needed
                 };
-                const response = await axios.get('http://localhost:8787/api/v1/user', { headers });
+                const response = await axios.get('https://backend.vishawdeepsingh29.workers.dev/api/v1/user', { headers });
       
                 if (response.status === 200) {
                   return response.data; 
@@ -131,7 +131,7 @@ export const PostsAtom = atom<Post[]>({
                     'authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json', // Optional: Set other headers if needed
                   };
-                  const response = await axios.get('http://localhost:8787/api/v1/blog', { headers });
+                  const response = await axios.get('https://backend.vishawdeepsingh29.workers.dev/api/v1/blog', { headers });
         
                   if (response.status === 200) {
                     console.log(response.data)

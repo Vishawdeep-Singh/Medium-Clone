@@ -129,7 +129,7 @@ const addError = (errorMessage: string) => {
              'authorization': `Bearer ${token}`,
              'Content-Type': 'application/json', // Optional: Set other headers if needed
            };
-           const response = await axios.post('http://localhost:8787/api/v1/blog/save',{postId}, { headers });
+           const response = await axios.post('https://backend.vishawdeepsingh29.workers.dev/api/v1/blog/save',{postId}, { headers });
      
            if(response.status===200){
              
@@ -211,7 +211,7 @@ const addError = (errorMessage: string) => {
                 'authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json', // Optional: Set other headers if needed
             };
-            const response = await axios.get(`http://localhost:8787/api/v1/blog/${postId}`, { headers });
+            const response = await axios.get(`https://backend.vishawdeepsingh29.workers.dev/api/v1/blog/${postId}`, { headers });
             console.log(response)
             if (response.status === 200) {
                 setPost(response.data);
@@ -257,7 +257,7 @@ const addError = (errorMessage: string) => {
                 'Content-Type': 'application/json', // Optional: Set other headers if needed
             };
 
-            const response = await axios.post(`http://localhost:8787/api/v1/blog/${postId}/like`, {}, { headers });
+            const response = await axios.post(`https://backend.vishawdeepsingh29.workers.dev/api/v1/blog/${postId}/like`, {}, { headers });
 
             if (response.status === 200) {
                 setAnimate(false)
@@ -350,7 +350,7 @@ async function postComment (postId:string){
                 'Content-Type': 'application/json', // Optional: Set other headers if needed
             };
 
-            const response = await axios.post(`http://localhost:8787/api/v1/blog/${postId}/comment`, {
+            const response = await axios.post(`https://backend.vishawdeepsingh29.workers.dev/api/v1/blog/${postId}/comment`, {
                 commentContent:commentContent
             }, { headers });
 

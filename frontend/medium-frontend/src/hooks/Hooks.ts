@@ -118,7 +118,7 @@ export const usePosts=()=>{
                     'authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json', // Optional: Set other headers if needed
                   };
-                  const response = await axios.get('http://localhost:8787/api/v1/users', { headers });
+                  const response = await axios.get('https://backend.vishawdeepsingh29.workers.dev/api/v1/users', { headers });
         
                   if (response.status === 200) {
                     
@@ -169,7 +169,7 @@ const [isLoading, setIsLoading] = useState(true);
                         'authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json', // Optional: Set other headers if needed
                       };
-                      const response = await axios.get('http://localhost:8787/api/v1/blog/tags', { headers });
+                      const response = await axios.get('https://backend.vishawdeepsingh29.workers.dev/api/v1/blog/tags', { headers });
                       if(response.status===200){
                         SetTags(response.data);
                         setIsLoading(false)

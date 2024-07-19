@@ -45,7 +45,7 @@ class User{
                 'authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json', // Optional: Set other headers if needed
               };
-        const response = await axios.post('http://localhost:8787/api/v1/blog/follow/create',{
+        const response = await axios.post('https://backend.vishawdeepsingh29.workers.dev/api/v1/blog/follow/create',{
             followedById:this.id,
             followingId:user.id
         }, { headers });
@@ -77,7 +77,7 @@ class User{
                 'authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json', // Optional: Set other headers if needed
               };
-        const response = await axios.post('http://localhost:8787/api/v1/blog/follow/delete',{
+        const response = await axios.post('https://backend.vishawdeepsingh29.workers.dev/api/v1/blog/follow/delete',{
             followedById:this.id,
             followingId:user.id
         }, { headers });
@@ -114,7 +114,7 @@ class SociaGraph{
                 'authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json', // Optional: Set other headers if needed
               };
-              const response = await axios.get('http://localhost:8787/api/v1/blog/follow/data', { headers });
+              const response = await axios.get('https://backend.vishawdeepsingh29.workers.dev/api/v1/blog/follow/data', { headers });
               console.log(response.data);
               let users;
               if(response.status===200){
@@ -321,7 +321,7 @@ const [fills,setFills]=useState<Fills>(()=>{
                 'Content-Type': 'application/json', // Optional: Set other headers if needed
             };
             
-            const response = await axios.post('http://localhost:8787/api/v1/anyUser', {
+            const response = await axios.post('https://backend.vishawdeepsingh29.workers.dev/api/v1/anyUser', {
                 userId:followingUserId}, { headers });
             
             console.log(response)
@@ -535,7 +535,7 @@ try {
         'authorization': `Bearer ${token}`,
         'Content-Type': 'application/json', // Optional: Set other headers if needed
       };
-      const response = await axios.post('http://localhost:8787/api/v1/blog/save',{postId}, { headers });
+      const response = await axios.post('https://backend.vishawdeepsingh29.workers.dev/api/v1/blog/save',{postId}, { headers });
 
       if(response.status===200){
         

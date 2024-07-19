@@ -176,7 +176,7 @@ export const TagPosts = () => {
         'authorization': `Bearer ${token}`,
         'Content-Type': 'application/json', // Optional: Set other headers if needed
       };
-      const response = await axios.post('http://localhost:8787/api/v1/blog/tag', { tagName }, { headers });
+      const response = await axios.post('https://backend.vishawdeepsingh29.workers.dev/api/v1/blog/tag', { tagName }, { headers });
       if (response.status === 200) {
         SetPosts(response.data.post);
 
@@ -290,7 +290,7 @@ export const TagPosts = () => {
         'authorization': `Bearer ${token}`,
         'Content-Type': 'application/json', // Optional: Set other headers if needed
       };
-      const response = await axios.post('http://localhost:8787/api/v1/blog/save', { postId }, { headers });
+      const response = await axios.post('https://backend.vishawdeepsingh29.workers.dev/api/v1/blog/save', { postId }, { headers });
 
       if (response.status === 200) {
 

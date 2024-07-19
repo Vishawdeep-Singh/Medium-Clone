@@ -16,7 +16,7 @@ export const Signup=()=>{
     const [errorMessages, setErrorMessages] = useState<string | string[]>([]);
     async function sendRequest() {
         try {
-            const response = await axios.post("http://localhost:8787/api/v1/signup",data)
+            const response = await axios.post("https://backend.vishawdeepsingh29.workers.dev/api/v1/signup",data)
         
             if (response.status !== 200) {
                 // Handle non-200 status codes as errors

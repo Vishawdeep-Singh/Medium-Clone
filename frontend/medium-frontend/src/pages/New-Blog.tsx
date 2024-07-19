@@ -106,7 +106,7 @@ export const NewBlog = () => {
           'authorization': `Bearer ${token}`,
           'Content-Type': 'application/json', // Optional: Set other headers if needed
         };
-        const response = await axios.post('http://localhost:8787/api/v1/blog', blogData,{ headers });
+        const response = await axios.post('https://backend.vishawdeepsingh29.workers.dev/api/v1/blog', blogData,{ headers });
        
         if (response.status === 200) {
           setAllPosts( (prev:Post[]) => [...prev,response.data])
