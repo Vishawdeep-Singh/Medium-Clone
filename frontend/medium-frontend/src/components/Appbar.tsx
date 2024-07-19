@@ -180,12 +180,7 @@ navigate(`/search?q=${encodeURIComponent(searchPosts.trim())}`)
                 }}  onKeyDown={handleKey} type="text" placeholder="Search" className="focus:outline-none rounded-lg placeholder-gray-500 bg-inherit placeholder:font-thin" />
             </div>
         </div>
-        <div className="not-sr-only md:sr-only flex ml-4 rounded-2xl items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className=" size-6 text-black">
-                <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-            </svg>
-
-        </div>
+        
         </div>
 
         <div className="flex relative items-center w-[50%] md:w-[20%] justify-around">
@@ -252,12 +247,15 @@ navigate(`/search?q=${encodeURIComponent(searchPosts.trim())}`)
 
 
     </div>
+    <input onChange={(e)=>{
+                    setsearchPosts(e.target.value)
+                }}  onKeyDown={handleKey} type="text" placeholder="Search" className="focus:outline-none rounded-lg ml-3 px-4 py-4 placeholder-black md:hidden bg-inherit relative placeholder:font-thin" />
 
     <div className="w-[100%] h-14 bg-gradient-to-r from-yellow-100 to-yellow-500">
 
     </div>
 
-    <div className={` w-[50%] shadow-lg h-36 bg-white  select-none overflow-y-auto z-50 self-center left-[7rem] top-[3rem]   absolute p-4 ${setContainsArr.length>0 ? 'block':'hidden'} ${searchPosts.length>0 ? 'block':'hidden'} `}>
+    <div className={` w-[50%] shadow-lg h-36 bg-white  select-none overflow-y-auto z-50 self-center left-[2rem] top-[7.5rem] md:left-[7rem] md:top-[3rem]   absolute p-4 ${setContainsArr.length>0 ? 'block':'hidden'} ${searchPosts.length>0 ? 'block':'hidden'} `}>
         
         {setContainsArr.length>0 && searchPosts.length>0 && containsArr.map((post)=>{
             return <div key={post.id} onClick={()=>{

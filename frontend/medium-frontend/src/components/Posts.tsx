@@ -83,7 +83,7 @@ interface Tag {
 
 export const Posts: React.FC<PostProps> = React.memo(({ post, handleClick, GotouserInfo, savePost, fills,formatDate }) => {
     return (
-      <div key={post.id} className="h-[19rem] overflow-y-auto mx-4 md:mx-[30px] border-y-[1px] border-[#F2F2F2] pt-10 space-y-2">
+      <div key={post.id} className="h-[19rem] overflow-y-auto mx-4 md:mx-[30px] border-y-[0.5px] border-[#F2F2F2] pt-10 space-y-2">
         {/* Author */}
         <div className="flex cursor-pointer">
           <div className="rounded-full h-5 w-5 bg-black flex-shrink-0"></div>

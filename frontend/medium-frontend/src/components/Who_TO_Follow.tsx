@@ -20,16 +20,16 @@ interface Props{
         <div className="flex flex-col px-7">
             <p onClick={()=>{
             navigate(`/userInfo/${userId}`)
-            }} className="font-bold text-lg hover:underline hover:cursor-pointer">{name}
+            }} className="font-bold text-md md:text-lg hover:underline hover:cursor-pointer">{name}
             </p>
-            <p className="font-normal line leading-5 text-[#7a7979] text-sm">Visual journalist/writer for New Yorker. Looking to ... </p>
+            <p className="font-normal line leading-5 text-[#7a7979] text-xs md:text-sm">Visual journalist/writer for New Yorker. Looking to ... </p>
         </div>
         {isFollowing ? (
- <button onClick={onUnFollow} className="px-3 rounded-xl border-[1px] border-black mr-5 font-light py-1 " >
+ <button onClick={onUnFollow} className="md:px-3 px-1 rounded-xl border-[1px] border-black mr-5 font-light py-1 " >
           Following
  </button>
     ) : (
-        <button onClick={onFollow} className="px-3 rounded-xl border-[1px] border-black mr-5 font-light py-1 " >
+        <button onClick={onFollow} className="md:px-3 px-1 rounded-xl border-[1px] border-black mr-5 font-light py-1 " >
           Follow
         </button>
     )}

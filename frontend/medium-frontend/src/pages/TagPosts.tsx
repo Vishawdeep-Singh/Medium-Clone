@@ -202,7 +202,25 @@ export const TagPosts = () => {
   useEffect(() => {
     fetchTagsPosts()
   }, [tagName])
+  const [scrollAmount, setScrollAmount] = useState(200); // Default scroll amount
 
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width <= 480) {
+        setScrollAmount(100); // Small screen scroll amount
+      } else if (width <= 768) {
+        setScrollAmount(300); // Medium screen scroll amount
+      } else {
+        setScrollAmount(600); // Large screen scroll amount
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Initial call to set the scroll amount
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
 
 
@@ -223,13 +241,13 @@ export const TagPosts = () => {
 
   const scrollLeft = () => {
     if (scoller.current) {
-      scoller.current.scrollBy({ left: -600, behavior: 'smooth' });
+      scoller.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
     }
   };
 
   const scrollRight = () => {
     if (scoller.current) {
-      scoller.current.scrollBy({ left: 600, behavior: 'smooth' });
+      scoller.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
 
@@ -315,7 +333,7 @@ export const TagPosts = () => {
 
 
 
-    <div className="flex items-center mt-10 mx-48 space-x-4">
+    <div className="flex items-center mt-10 mx-6 md:mx-48 space-x-4">
       <button
         onClick={scrollLeft}
         className=" z-10 bg-black text-white flex-shrink-0 p-2 h-10 w-10 rounded-full"
@@ -340,12 +358,12 @@ export const TagPosts = () => {
     </div>
 
 
-    <div className="text-6xl font-bold text-center mt-28">
+    <div className="md:text-6xl text-2xl font-bold text-center mt-28">
       {tagName}
     </div>
 
 
-    <div className="w-[60%] m-auto mt-16">
+    <div className="md:w-[60%] overflow-y-auto m-auto mt-16">
       {PostsLoading && <div className="flex items-center mt-48 justify-center">
         <PulseLoader
           color={"#000000"}

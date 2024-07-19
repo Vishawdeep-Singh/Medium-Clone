@@ -64,7 +64,25 @@ const addError = (errorMessage: string) => {
     const [containsArr,setContainsArr]=useState<string[]>([]);
   
   
-    
+    const [scrollAmount, setScrollAmount] = useState(200); // Default scroll amount
+
+    useEffect(() => {
+      const handleResize = () => {
+        const width = window.innerWidth;
+        if (width <= 480) {
+          setScrollAmount(100); // Small screen scroll amount
+        } else if (width <= 768) {
+          setScrollAmount(300); // Medium screen scroll amount
+        } else {
+          setScrollAmount(600); // Large screen scroll amount
+        }
+      };
+  
+      window.addEventListener('resize', handleResize);
+      handleResize(); // Initial call to set the scroll amount
+  
+      return () => window.removeEventListener('resize', handleResize);
+    }, []);
    
     
     const navigate = useNavigate()
@@ -91,13 +109,13 @@ const addError = (errorMessage: string) => {
 
                 const scrollLeft = () => {
                     if (scoller.current) {
-                      scoller.current.scrollBy({ left: -600, behavior: 'smooth' });
+                      scoller.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
                     }
                   };
                 
                   const scrollRight = () => {
                     if (scoller.current) {
-                      scoller.current.scrollBy({ left: 600, behavior: 'smooth' });
+                      scoller.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
                     }
                   };
 
@@ -147,7 +165,7 @@ const addError = (errorMessage: string) => {
 
 
 
-        <div className="flex items-center mt-10 mx-48 space-x-4">
+        <div className="flex items-center mt-10 mx-6 md:mx-48 space-x-4">
           
         <button
           onClick={scrollLeft}
@@ -179,23 +197,23 @@ const addError = (errorMessage: string) => {
            
         </div>
 
-        <div className="text-6xl font-bold text-center mt-28">
+        <div className="md:text-6xl text-2xl font-bold text-center mt-28">
             Explore Topics
         </div>
-        <div className="flex flex-col items-center relative mt-10">
-        <div className="flex ml-4 rounded-[2.5rem] bor items-center w-[50%] h-16 bg-[#F9F9F9] py-2 px-5">
+        <div className="flex w-[100%] flex-col items-center relative mt-10">
+        <div className="flex ml-4 rounded-[2.5rem] w-full mx-1 items-center md:w-[50%] h-16 bg-[#F9F9F9] py-2 px-5">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 text-inherit">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
             </svg>
 
-            <div className="ml-3 hover:cursor-text w-[100%]">
+            <div className="ml-3  hover:cursor-text w-[100%]">
                 <input onChange={(e)=>{
                     setsearchTag(e.target.value)
-                }} type="text" placeholder="Search all topics" className=" w-[100%] focus:outline-none rounded-lg placeholder-gray-500 bg-inherit placeholder:font-medium" />
+                }} type="text" placeholder="Search all topics" className=" md:w-[100%] focus:outline-none rounded-lg placeholder-gray-500 bg-inherit placeholder:font-medium" />
             </div>
             
         </div>
-        <div className={`w-80 shadow-lg h-36 bg-white  select-none overflow-y-auto z-30 self-center top-16 left-[21rem] absolute p-4 ${setContainsArr.length>0 ? 'block':'hidden'} ${searchTag.length>0 ? 'block':'hidden'} `}>
+        <div className={`w-80 shadow-lg h-36 bg-white  select-none overflow-y-auto z-30 self-center top-20 md:top-16 left-[2rem] md:left-[21rem] absolute p-4 ${setContainsArr.length>0 ? 'block':'hidden'} ${searchTag.length>0 ? 'block':'hidden'} `}>
         
                 {setContainsArr.length>0 && searchTag.length>0 && containsArr.map((tag)=>{
                     return <div onClick={()=>{

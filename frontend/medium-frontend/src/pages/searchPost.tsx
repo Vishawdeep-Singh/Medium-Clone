@@ -570,13 +570,13 @@ if (isLoading) {
 
 
 <div>
-        <div className=" relative grid grid-cols-10 h-lvh overflow-hidden">
-        <div className=" col-span-7 overflow-y-auto">
-            <div className="flex h-20">
+        <div className=" relative md:grid md:grid-cols-10 h-lvh md:overflow-hidden">
+        <div className=" md:col-span-7 overflow-y-auto">
+            <div className="flex h-20 ">
 
             </div>
-            <div className="grid grid-rows  px-20 mt-10 overflow-y-auto">
-                <div className="flex ">
+            <div className="grid grid-rows px-2 md:px-20 mt-10 overflow-y-auto">
+                <div className="flex mb-10 ">
                     <div className="text-4xl font-bold text-gray-500">
                     Results For
                 </div>

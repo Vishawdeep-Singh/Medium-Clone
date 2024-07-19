@@ -14,6 +14,8 @@ import { ExploreTags } from './pages/MoreTags'
 import { TagPosts } from './pages/TagPosts'
 import { SearchPosts } from './pages/searchPost'
 import { RecoilRoot } from 'recoil'
+import { Sidebar } from './components/Sidebar'
+import { MobileSideBar } from './pages/MobileSidebar'
 // import { Signin } from './pages/Signin'
 // import { Blog } from './pages/Blog'
 
@@ -33,6 +35,7 @@ function App() {
           <Route path='/explore-topics' element={<ExploreTags />} />
           <Route path='/tag/:tagName' element={<TagPosts />} />
           <Route path='/search' element={<SearchPosts />} />
+          <Route path='/side' element={<MobileSideBar />} />
         </Routes>
       </BrowserRouter>
     </RecoilRoot>

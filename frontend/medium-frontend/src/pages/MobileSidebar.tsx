@@ -1,19 +1,15 @@
-import React, { CSSProperties, useEffect, useRef, useState } from "react";
-import { GrayButton } from "./GrayButton"
-import { ProfileCompo } from "./Who_TO_Follow"
 import axios from "axios";
-import { LoadingSpinner } from "../pages/LoadingSpinner";
+import { Sidebar } from "../components/Sidebar"
+import { useState, useRef, useEffect, CSSProperties } from "react";
 import { useNavigate } from "react-router-dom";
-import { Appbar } from "./Appbar";
-import { useRecoilState, useRecoilStateLoadable, useRecoilValueLoadable } from "recoil";
-import { followingStatusAtom, PostsAtom, TagsAtom, UserAtom } from "../states/atoms";
-import ClipLoader from "react-spinners/ClipLoader";
-import { PropagateLoader, PulseLoader, ScaleLoader } from "react-spinners";
-import { Sidebar } from "./Sidebar";
-import { Posts } from "./Posts";
+import { PropagateLoader, ScaleLoader } from "react-spinners";
+import { useRecoilState, useRecoilStateLoadable } from "recoil";
 import { usePosts, useUsers, useTags } from "../hooks/Hooks";
-import ErrorDisplay from "../pages/error";
-
+import { followingStatusAtom, UserAtom } from "../states/atoms";
+import ErrorDisplay from "./error";
+import { GrayButton } from "../components/GrayButton";
+import { ProfileCompo } from "../components/Who_TO_Follow";
+import { Appbar } from "../components/Appbar";
 
 class User{
        
@@ -245,20 +241,19 @@ interface Tag {
 
 
 }
-  
-export const Dashboard = () => {
+export const MobileSideBar=()=>{
 
-  
-      
-  
+
     const [socialGraphData, setSocialGraphData] = useState<Map<string, User>>(new Map());
     const graphRef = useRef<SociaGraph | null>(null);
     const [followingStatus, setFollowingStatus] = useRecoilState(followingStatusAtom) ;
-    const[followingPosts,setFollowingPosts]=useState<Post1[]>([])
+   
     const [isLoading, setIsLoading] = useState(true);
-const {posts,isLoading:postsLoading,error:postsError}=usePosts();
+
 const {users,isLoading:usersLoading,error:usersError}=useUsers();
+
 const {tags,isLoading:tagsLoading,error:tagsError}=useTags();
+
 const [user,SetUser]=useState({
   id: "",
   email: "",
@@ -292,9 +287,7 @@ useEffect(() => {
   }
 }, [Loadableuser]);
 
-const [forYouPosts,setForYouPosts]=useState(true)
 
-const [isSpinner, setIsSpinner] = useState(false);
 
 const [fills,setFills]=useState<Fills>(()=>{
     const savedFills= localStorage.getItem("fills");
@@ -306,50 +299,7 @@ const [fills,setFills]=useState<Fills>(()=>{
 
 
 
-    const fetchFollwingUser = async (followingUserId:string) => {
-        
-        try {
-           
-            console.log(followingUserId)
-            const token: string | null = localStorage.getItem("token");
-            if (!token) {
-                throw new Error("Token Not Found")
-            }
-
-            const headers = {
-                'authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json', // Optional: Set other headers if needed
-            };
-            
-            const response = await axios.post('http://localhost:8787/api/v1/anyUser', {
-                userId:followingUserId}, { headers });
-            
-            console.log(response)
-            if (response.status === 200) {
-                const newPosts:Post1[]=response.data.posts
-                
-                setFollowingPosts(prevPosts => [...prevPosts, ...newPosts])
-                
-                setIsLoading(false);
-
-
-            } else {
-                throw new Error(`Failed to fetch userInfo: ${response.statusText}`);
-                setIsLoading(false)
-            }
-        } catch (error: any) {
-          if(error.response){
-            addError(`Error fetching user info: ${error.response.data.message}`);
-          }
-          else{
-            addError(`Error fetching user info: ${error.message}`);
-          }
-          
-            console.error('Error fetching userInfo:', error.message);
-            setIsLoading(false)
-
-        }
-    }
+    
    
     useEffect(()=>{
        const fetch=async()=>{ 
@@ -435,20 +385,13 @@ const [fills,setFills]=useState<Fills>(()=>{
     
     
     
+const navigate = useNavigate()
 
     
    
 
   
-    const navigate = useNavigate();
-
-    const formatDate =  (dateString: string): string => {
-        const dateObj = new Date(dateString);
-        const year = dateObj.getFullYear();
-        const month = ('0' + (dateObj.getMonth() + 1)).slice(-2); // Adding 1 because getMonth() returns 0-based index
-        const day = ('0' + dateObj.getDate()).slice(-2);
-        return `${day}-${month}-${year}`;
-      };
+   
 
 
 
@@ -511,60 +454,8 @@ useEffect(() => {
 
  
 
-async function savePost(postId:string){
-   setFills(prevFills =>{
-    const newFills = {
-        ...prevFills
-        }
-    if(newFills.hasOwnProperty(postId)){
-        delete newFills[postId]
-    }
-    else{
-        newFills[postId]="black"
-    }
-
-    localStorage.setItem("fills",JSON.stringify(newFills));
-    return newFills
-   })
-try {
-    const token:string | null = localStorage.getItem("token");
-    if(!token){
-        throw new Error("Token Not Found")
-    }
-    const headers = {
-        'authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json', // Optional: Set other headers if needed
-      };
-      const response = await axios.post('http://localhost:8787/api/v1/blog/save',{postId}, { headers });
-
-      if(response.status===200){
-        
-        console.log("Post saved")
-      }
-      else {
-        throw new Error(`Failed save post: ${response.statusText}`);
-      }
-} catch (error:any) {
-  if(error.response){
-    addError(`Error saving post: ${error.response.data.message}`);
-  }
-  else{
-    addError(`Error saving post: ${error.message}`);
-  }
-    console.error('Error in saving post:', error.message);
-   
-      
-}
-}
  
-const GotouserInfo = (userId:string)=>{
-navigate(`/userInfo/${userId}`)
-}
 
-
-function handleClick(postId:string){
-    navigate(`/blog-info/${postId}`);
-}
 
 
 const override: CSSProperties = {
@@ -591,10 +482,10 @@ data-testid="loader"
         </div>
   }
 
-  if(postsError || tagsError ||usersError || error.length>0){
+  if( tagsError ||usersError || error.length>0){
     return <div>
         {error.length>0 && <ErrorDisplay messages={error}></ErrorDisplay>}
-{postsError && <ErrorDisplay messages={postsError}></ErrorDisplay>}
+
 {tagsError && <ErrorDisplay messages={tagsError}></ErrorDisplay>}
 {usersError && <ErrorDisplay messages={usersError}></ErrorDisplay>}
     </div>
@@ -602,129 +493,73 @@ data-testid="loader"
   
 
 
-console.log(postsError)
-    return <div>
-     
- <Appbar></Appbar>
 
 
-<div>
-        <div className=" relative md:grid md:grid-cols-10 h-lvh md:overflow-hidden">
-        <div className=" md:col-span-7 overflow-y-auto">
-            <div className="flex h-20">
 
-            </div>
-            <div className="grid md:grid-rows  md:px-20 mt-10 overflow-y-auto">
-                <div className="flex  items-center mx-[30px] mb-10 justify-between text-sm md:text-md font-light">
-                    <div onClick={()=>{
-                        setForYouPosts(true)
-                    }}  className={`  hover:text-black cursor-pointer ${forYouPosts ? 'font-bold text-lg md:text-xl text-black' : ''}`}>
-                        For You
-                    </div>
-                    <div onClick={()=>{
-                      navigate("/side")
-                    }} className="bold text-xl  md:hidden">
-                      +
-                    </div>
-                    <div onClick={async ()=>{
-                        setForYouPosts(false)
-                        setFollowingPosts([])
-                        setIsSpinner(true)
-                        if(graphRef.current){
 
-                            const followingUser= graphRef.current.getUser(user.id)?.following
-                            if (followingUser) {
-                                for (const following of followingUser) {
-                                    console.log(following);
-                                                             
-                                    await fetchFollwingUser(following.id);
-                                  
-                                    
-                                }
-                                setIsSpinner(false)
-                            }
-                           
-                            }
-                            console.log(followingPosts)
-                    }} className={` hover:text-black cursor-pointer ${forYouPosts ? '' : 'font-bold text-black text-lg md:text-xl'}`}>
-                        Following
-                    </div>
-                </div>
-               
-                    {postsLoading&& <div className="flex items-center mt-48 justify-center">
-                        <PulseLoader
-        color={color}
-        loading={postsLoading}
-        
-        size={40}
-        aria-label="Loading Spinner"
-        data-testid="loader"
-      />
-                        
-                        </div>}
-                {posts && !isSpinner && forYouPosts && posts.map((post,index)=>{
-                   return <Posts
-                    key={post.id}
-                    post={post}
-                    handleClick={handleClick}
-                    GotouserInfo={GotouserInfo}
-                    savePost={savePost}
-                    fills={fills}
-                    formatDate={formatDate}
+
+
+
+return <div>
+
+<Appbar></Appbar>
+<div className="border-l  border-slate-200  md:hidden md:col-span-3 overflow-y-auto">
+        <div className="flex flex-col justify-start ml-10">
+          <div className="font-medium pt-28">
+            Recommended topics
+            {tagsLoading && (
+              <div className="flex items-center mt-12 justify-center">
+                <ScaleLoader color={color} loading={tagsLoading} size={40} aria-label="Loading Spinner" data-testid="loader" />
+              </div>
+            )}
+            {!tagsLoading && (
+              <div className="flex flex-wrap pt-5">
+                {tags.slice(0, 9).map((tag) => (
+                  <GrayButton
+                    key={tag.id}
+                    text={tag.tag}
+                    onClick={() => {
+                      navigate(`/tag/${tag.tag}`);
+                    }}
                   />
+                ))}
+              </div>
+            )}
+          </div>
+  
+          <div
+            onClick={() => {
+              navigate('/explore-topics');
+            }}
+            className="mt-14 font-light hover:underline cursor-pointer"
+          >
+            See More
+          </div>
+  
+          <div className="font-medium pt-28">
+            Who To Follow
+            <div className="space-y-10 pt-8">
+              {users &&
+                users.length > 0 &&
+                users.map((user1) => {
+                  if (user1.id === user.id) {
+                    return null;
+                  } else {
+                    return (
+                      <ProfileCompo
+                        key={user1.id}
+                        onFollow={() => onFollow(user1.id, user.id)}
+                        onUnFollow={() => onUnFollow(user1.id, user.id)}
+                        userId={user1.id}
+                        name={user1.name}
+                        isFollowing={followingStatus.get(user1.id) || false}
+                      />
+                    );
+                  }
                 })}
-
-
-{isSpinner&& <div className="flex items-center mt-48 justify-center">
-                        <PulseLoader
-        color={color}
-        loading={isSpinner}
-        
-        size={40}
-        aria-label="Loading Spinner"
-        data-testid="loader"
-      />
-                        
-                        </div>}
-
-                {followingPosts.length>0 && !forYouPosts && followingPosts.map((post,index)=>{
-                   return <Posts
-                   key={post.id}
-                   post={post}
-                   handleClick={handleClick}
-                   GotouserInfo={GotouserInfo}
-                   savePost={savePost}
-                   fills={fills}
-                   formatDate={formatDate}
-                 />
-                })}
-                
-
-
-
-
             </div>
-
+          </div>
         </div>
-
-
-
-        {/* Sidebar */}
-        
-        <Sidebar tags={tags} tagsLoading={tagsLoading} users={users} user={user} followingStatus={followingStatus} onFollow={onFollow} onUnFollow={onUnFollow} color={color}  />
-    </div>
-    </div>
-    </div>
-}
-
-interface SidebarProps {
-    tags:Tag[];
-    tagsLoading:boolean;
-    users:Users[];
-    user:any;
-    followingStatus:Map<string,boolean>;
-    onFollow:(targetId: string, ownerId: string) => void;
-    onUnFollow:(targetId: string, ownerId: string) => void;
-    color:string
-
+      </div>
+      </div>
 }
