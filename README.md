@@ -36,9 +36,6 @@
   <p align="center">
     Where you can thought 
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
     <a href="https://thought-five.vercel.app/">View Live Project</a>
    
    
