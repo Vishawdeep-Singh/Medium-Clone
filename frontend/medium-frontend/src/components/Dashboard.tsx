@@ -1,14 +1,13 @@
-import React, { CSSProperties, useEffect, useRef, useState } from "react";
-import { GrayButton } from "./GrayButton"
-import { ProfileCompo } from "./Who_TO_Follow"
+import  { useEffect, useRef, useState } from "react";
+
 import axios from "axios";
-import { LoadingSpinner } from "../pages/LoadingSpinner";
+
 import { useNavigate } from "react-router-dom";
 import { Appbar } from "./Appbar";
-import { useRecoilState, useRecoilStateLoadable, useRecoilValueLoadable } from "recoil";
-import { followingStatusAtom, PostsAtom, TagsAtom, UserAtom } from "../states/atoms";
-import ClipLoader from "react-spinners/ClipLoader";
-import { PropagateLoader, PulseLoader, ScaleLoader } from "react-spinners";
+import { useRecoilState, useRecoilStateLoadable} from "recoil";
+import { followingStatusAtom, UserAtom } from "../states/atoms";
+
+import { PropagateLoader, PulseLoader } from "react-spinners";
 import { Sidebar } from "./Sidebar";
 import { Posts } from "./Posts";
 import { usePosts, useUsers, useTags } from "../hooks/Hooks";
@@ -201,16 +200,16 @@ interface Tag {
     post:Post[]
     
   }
-  interface post{
-    id: string;
-    title: string;
-    content: string;
-    published: boolean;
-    authorId: string;
-    date: string;
-    likes: number;
-    author: Author
-  }
+  // interface post{
+  //   id: string;
+  //   title: string;
+  //   content: string;
+  //   published: boolean;
+  //   authorId: string;
+  //   date: string;
+  //   likes: number;
+  //   author: Author
+  // }
   
   interface Author {
     id: string;
@@ -235,16 +234,6 @@ interface Tag {
   interface Fills {
     [key: string]: string;
   }
-  interface Users{
-    
-    id:string,
-    email:string,
-    name:string,
-    followedBy:[],
-    following:[]
-
-
-}
   
 export const Dashboard = () => {
 
@@ -257,7 +246,8 @@ export const Dashboard = () => {
     const[followingPosts,setFollowingPosts]=useState<Post1[]>([])
     const [isLoading, setIsLoading] = useState(true);
 const {posts,isLoading:postsLoading,error:postsError}=usePosts();
-const {users,isLoading:usersLoading,error:usersError}=useUsers();
+
+const {users,error:usersError}=useUsers();
 const {tags,isLoading:tagsLoading,error:tagsError}=useTags();
 const [user,SetUser]=useState({
   id: "",
@@ -266,7 +256,7 @@ const [user,SetUser]=useState({
   savedPosts: []
 })
 
-const [Loadableuser,LoadableSetUser]=useRecoilStateLoadable(UserAtom);
+const [Loadableuser]=useRecoilStateLoadable(UserAtom);
 const [error, setError] = useState<string[]>([]);
 
 const addError = (errorMessage: string) => {
@@ -567,12 +557,8 @@ function handleClick(postId:string){
 }
 
 
-const override: CSSProperties = {
-    display: "block",
-    margin: "0 auto",
-    borderColor: "red",
-  };
-  let [color, setColor] = useState("#000000");
+
+  let [color] = useState("#000000");
   
 
 if (isLoading) {
@@ -662,7 +648,7 @@ console.log(postsError)
       />
                         
                         </div>}
-                {posts && !isSpinner && forYouPosts && posts.map((post,index)=>{
+                {posts && !isSpinner && forYouPosts && posts.map((post)=>{
                    return <Posts
                     key={post.id}
                     post={post}
@@ -687,7 +673,7 @@ console.log(postsError)
                         
                         </div>}
 
-                {followingPosts.length>0 && !forYouPosts && followingPosts.map((post,index)=>{
+                {followingPosts.length>0 && !forYouPosts && followingPosts.map((post)=>{
                    return <Posts
                    key={post.id}
                    post={post}
@@ -717,14 +703,4 @@ console.log(postsError)
     </div>
 }
 
-interface SidebarProps {
-    tags:Tag[];
-    tagsLoading:boolean;
-    users:Users[];
-    user:any;
-    followingStatus:Map<string,boolean>;
-    onFollow:(targetId: string, ownerId: string) => void;
-    onUnFollow:(targetId: string, ownerId: string) => void;
-    color:string
 
-}

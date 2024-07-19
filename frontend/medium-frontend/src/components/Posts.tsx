@@ -33,16 +33,6 @@ interface Tag {
     post:Post[]
     
   }
-  interface post{
-    id: string;
-    title: string;
-    content: string;
-    published: boolean;
-    authorId: string;
-    date: string;
-    likes: number;
-    author: Author
-  }
   
   interface Author {
     id: string;
@@ -67,16 +57,6 @@ interface Tag {
   interface Fills {
     [key: string]: string;
   }
-  interface Users{
-    
-    id:string,
-    email:string,
-    name:string,
-    followedBy:[],
-    following:[]
-
-
-}
 
 
 

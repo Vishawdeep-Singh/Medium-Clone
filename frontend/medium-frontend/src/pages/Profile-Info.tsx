@@ -2,7 +2,6 @@ import { useNavigate, useParams } from "react-router-dom"
 import { Appbar } from "../components/Appbar"
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { LoadingSpinner } from "./LoadingSpinner";
 import { useRecoilStateLoadable } from "recoil";
 import { UserAtom } from "../states/atoms";
 import ErrorDisplay from "./error";
@@ -217,22 +216,6 @@ export const ProfileInfo = () => {
         post:Post1[]
         
       }
-      interface User1{
-        id:string;
-        email:string,
-        name:string,
-       savedPosts:post[]
-      }
-      interface post{
-        id: string;
-        title: string;
-        content: string;
-        published: boolean;
-        authorId: string;
-        date: string;
-        likes: number;
-        author: Author
-      }
       
       const [error, setError] = useState<string[]>([]);
 
@@ -240,7 +223,7 @@ const addError = (errorMessage: string) => {
   setError(prevErrors => [...prevErrors, errorMessage]);
 };
     const [posts,SetPosts] = useState<Post[]>([]);
-    const[allPosts,setAllPosts]=useState<Post1[]>([]);
+   
     const [isLoading, setIsLoading] = useState(true);
     const [savedPosts,setSavedPosts]=useState<Post[]>([]);
     const [whichPosts,setWhichPosts]=useState("your")
@@ -255,7 +238,7 @@ const addError = (errorMessage: string) => {
 
     })
 
-    const [Loadableuser,LoadableSetUser]=useRecoilStateLoadable(UserAtom);
+    const [Loadableuser]=useRecoilStateLoadable(UserAtom);
     
     useEffect(() => {
         // Check the state of loadableUser to determine UI state
@@ -514,7 +497,7 @@ data-testid="loader"
                             
                         {/*  */}
 
-                        {  whichPosts==="your" &&  posts && posts.map((post,index)=>{
+                        {  whichPosts==="your" &&  posts && posts.map((post,_index)=>{
                     return <div key={post.id} className="h-[19rem] overflow-y-auto mx-4 md:mx-[30px] border-y-[1px] border-[#F2F2F2] pt-10 space-y-2" >
 
 
@@ -594,7 +577,7 @@ data-testid="loader"
                     No Saved Posts
                 </div>
                 </>}
-                        { whoseInfo==="owner" && whichPosts==="saved" &&  savedPosts.length>0 && savedPosts.map((post,index)=>{
+                        { whoseInfo==="owner" && whichPosts==="saved" &&  savedPosts.length>0 && savedPosts.map((post,_index)=>{
                      return <div key={post.id} className="h-[19rem] overflow-y-auto mx-4 md:mx-[30px] border-y-[1px] border-[#F2F2F2] pt-10 space-y-2" >
 
 

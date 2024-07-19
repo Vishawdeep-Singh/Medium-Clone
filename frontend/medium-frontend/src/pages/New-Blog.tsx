@@ -1,44 +1,17 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createPostType } from "@johnwick002992/common-medium-app";
 import { LoadingSpinner } from "./LoadingSpinner";
-import { SetterOrUpdater, useRecoilState, useRecoilStateLoadable, useRecoilValue, useRecoilValueLoadable, useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { PostsAtom, UserAtom } from "../states/atoms";
 import ErrorDisplay from "./error";
-interface Post1 {
-  id: string;
-  title: string;
-  content: string;
-  published: boolean;
-  authorId: string;
-  date: string;
-  likes: number;
-  author: Author;
-  tags: Tag1[];
-  comments: any[]; 
-  savers: any[];
-}
-interface Tag1 {
-  id: number;
-  tag: string;
-}
 
 interface Tag {
   id: number;
   tag: string;
   post:Post[]
   
-}
-interface post{
-  id: string;
-  title: string;
-  content: string;
-  published: boolean;
-  authorId: string;
-  date: string;
-  likes: number;
-  author: Author
 }
 
 interface Author {
@@ -61,24 +34,11 @@ interface Post {
   comments: any[]; 
   savers: any[];
 }
-interface Fills {
-  [key: string]: string;
-}
-interface Users{
-      
-  id:string,
-  email:string,
-  name:string,
-  followedBy:[],
-  following:[]
-
-
-}
 export const NewBlog = () => {
   const setAllPosts  = useSetRecoilState(PostsAtom)
   const [dropdown,SetDropdown]=useState(false)
   const navigate= useNavigate();
-  const [isLoading, setIsLoading] = useState(true);
+
   const [isLoading2, setIsLoading2] = useState(false);
   
   const [error, setError] = useState<string[]>([]);

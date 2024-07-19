@@ -1,27 +1,25 @@
-import React, { LegacyRef, useEffect, useRef, useState } from "react"
-import image from '../assets/bitmap.png';
-import texture from '../assets/texture3.png';
+import {  useEffect, useRef, useState } from "react"
 
-import { Avatar, Dropdown, Navbar } from "flowbite-react";
+
+
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { LoadingSpinner } from "../pages/LoadingSpinner";
+
 import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 import { PostsAtom, UserAtom } from "../states/atoms";
-import { BounceLoader, PropagateLoader } from "react-spinners";
+import { BounceLoader } from "react-spinners";
 
 
 
-interface SavedPost {
-  id: string;
-}
-interface UserProps {
-  id: string;
-  email: string;
-  name: string;
-  savedPosts: SavedPost[];
-  posts:Post[] // Adjust fields as per your schema
-}
+// interface SavedPost {
+//   id: string;
+// }
+// interface UserProps {
+//   id: string;
+//   email: string;
+//   name: string;
+//   savedPosts: SavedPost[];
+//   posts:Post[] // Adjust fields as per your schema
+// }
 interface Post {
   id: string;
   title: string;
@@ -50,16 +48,16 @@ interface Author {
   password: string; 
 }
 
-interface AppbarProps {
-  posts: Post[];
-  user: User;
-}
-interface User{
-  id:string;
-  email:string,
-  name:string,
- savedPosts:post[]
-}
+// interface AppbarProps {
+//   posts: Post[];
+//   user: User;
+// }
+// interface User{
+//   id:string;
+//   email:string,
+//   name:string,
+//  savedPosts:post[]
+// }
 interface post{
   id: string;
   title: string;

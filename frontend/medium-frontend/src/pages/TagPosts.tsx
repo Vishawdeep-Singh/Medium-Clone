@@ -21,15 +21,6 @@ export const TagPosts = () => {
     post: Post[]
 
   }
-  interface post {
-    id: string;
-    title: string;
-    content: string;
-    published: boolean;
-    authorId: string;
-    date: string;
-    likes: number;
-  }
 
   interface Author {
     id: string;
@@ -60,7 +51,7 @@ export const TagPosts = () => {
   const addError = (errorMessage: string) => {
       setError(prevErrors => [...prevErrors, errorMessage]);
     };
-  const { tags, isLoading: tagsLoading, error: tagsError }: UseTagsResult = useTags();
+  const { tags, error: tagsError }: UseTagsResult = useTags();
 
   const [isLoading, setIsLoading] = useState(true);
   const [PostsLoading, setPostsLoading] = useState(true);
@@ -77,7 +68,7 @@ export const TagPosts = () => {
     savedPosts: []
   })
 
-  const [Loadableuser, LoadableSetUser] = useRecoilStateLoadable(UserAtom);
+  const [Loadableuser] = useRecoilStateLoadable(UserAtom);
 
 
   useEffect(() => {
@@ -375,7 +366,7 @@ export const TagPosts = () => {
         />
 
       </div>}
-      {!PostsLoading && posts && posts.map((post, index) => {
+      {!PostsLoading && posts && posts.map((post) => {
         return <Posts
           key={post.id}
           post={post}

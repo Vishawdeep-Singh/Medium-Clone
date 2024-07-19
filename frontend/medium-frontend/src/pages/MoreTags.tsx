@@ -1,7 +1,7 @@
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { Appbar } from "../components/Appbar"
 import { useEffect, useRef, useState } from "react";
-import axios from "axios";
+
 import { LoadingSpinner } from "./LoadingSpinner";
 import { GrayButton } from "../components/GrayButton";
 import { useTags } from "../hooks/Hooks";
@@ -10,22 +10,11 @@ import ErrorDisplay from "./error";
 
 
 export const ExploreTags = ()=>{
-    interface Fills {
-        [key: string]: string;
-      } interface Tag {
+ interface Tag {
         id: number;
         tag: string;
         post:Post[]
         
-      }
-      interface post{
-        id: string;
-        title: string;
-        content: string;
-        published: boolean;
-        authorId: string;
-        date: string;
-        likes: number;
       }
       
       interface Author {

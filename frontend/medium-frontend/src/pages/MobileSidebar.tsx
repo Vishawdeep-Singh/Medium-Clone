@@ -1,10 +1,10 @@
 import axios from "axios";
-import { Sidebar } from "../components/Sidebar"
-import { useState, useRef, useEffect, CSSProperties } from "react";
+
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { PropagateLoader, ScaleLoader } from "react-spinners";
 import { useRecoilState, useRecoilStateLoadable } from "recoil";
-import { usePosts, useUsers, useTags } from "../hooks/Hooks";
+import {  useUsers, useTags } from "../hooks/Hooks";
 import { followingStatusAtom, UserAtom } from "../states/atoms";
 import ErrorDisplay from "./error";
 import { GrayButton } from "../components/GrayButton";
@@ -172,23 +172,6 @@ if (user && targetUser) {
 
 
 
-interface Post1 {
-    id: string;
-    title: string;
-    content: string;
-    published: boolean;
-    authorId: string;
-    date: string;
-    likes: number;
-    author: Author;
-    tags: Tag1[];
-    comments: any[]; 
-    savers: any[];
-  }
-  interface Tag1 {
-    id: number;
-    tag: string;
-  }
 
 
 interface Tag {
@@ -196,16 +179,6 @@ interface Tag {
     tag: string;
     post:Post[]
     
-  }
-  interface post{
-    id: string;
-    title: string;
-    content: string;
-    published: boolean;
-    authorId: string;
-    date: string;
-    likes: number;
-    author: Author
   }
   
   interface Author {
@@ -231,16 +204,6 @@ interface Tag {
   interface Fills {
     [key: string]: string;
   }
-  interface Users{
-    
-    id:string,
-    email:string,
-    name:string,
-    followedBy:[],
-    following:[]
-
-
-}
 export const MobileSideBar=()=>{
 
 
@@ -250,7 +213,7 @@ export const MobileSideBar=()=>{
    
     const [isLoading, setIsLoading] = useState(true);
 
-const {users,isLoading:usersLoading,error:usersError}=useUsers();
+const {users,error:usersError}=useUsers();
 
 const {tags,isLoading:tagsLoading,error:tagsError}=useTags();
 
@@ -261,7 +224,7 @@ const [user,SetUser]=useState({
   savedPosts: []
 })
 
-const [Loadableuser,LoadableSetUser]=useRecoilStateLoadable(UserAtom);
+const [Loadableuser]=useRecoilStateLoadable(UserAtom);
 const [error, setError] = useState<string[]>([]);
 
 const addError = (errorMessage: string) => {
@@ -289,7 +252,7 @@ useEffect(() => {
 
 
 
-const [fills,setFills]=useState<Fills>(()=>{
+const [,setFills]=useState<Fills>(()=>{
     const savedFills= localStorage.getItem("fills");
     return savedFills? JSON.parse(savedFills) : {}
 });
@@ -458,12 +421,7 @@ useEffect(() => {
 
 
 
-const override: CSSProperties = {
-    display: "block",
-    margin: "0 auto",
-    borderColor: "red",
-  };
-  let [color, setColor] = useState("#000000");
+  let [color] = useState("#000000");
   
 
 if (isLoading) {
@@ -509,7 +467,7 @@ return <div>
             Recommended topics
             {tagsLoading && (
               <div className="flex items-center mt-12 justify-center">
-                <ScaleLoader color={color} loading={tagsLoading} size={40} aria-label="Loading Spinner" data-testid="loader" />
+                <ScaleLoader color={color} loading={tagsLoading}  aria-label="Loading Spinner" data-testid="loader" />
               </div>
             )}
             {!tagsLoading && (

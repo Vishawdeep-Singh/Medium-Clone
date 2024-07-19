@@ -1,7 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Appbar } from "../components/Appbar";
-import { GrayButton } from "../components/GrayButton";
-import { ProfileCompo } from "../components/Who_TO_Follow";
 import axios from "axios";
 import { useState, useEffect, useRef } from "react";
 import { LoadingSpinner } from "./LoadingSpinner";
@@ -174,16 +172,6 @@ interface Tag {
   post:Post[]
   
 }
-interface post{
-  id: string;
-  title: string;
-  content: string;
-  published: boolean;
-  authorId: string;
-  date: string;
-  likes: number;
-  author: Author
-}
 
 interface Author {
   id: string;
@@ -208,24 +196,7 @@ interface Post {
 interface Fills {
   [key: string]: string;
 }
-interface Post1 {
-  id: string;
-  title: string;
-  content: string;
-  published: boolean;
-  authorId: string;
-  date: string;
-  likes: number;
-  author: Author;
-  tags: Tag1[];
-  comments: any[]; 
-  savers: any[];
-}
 
-interface Tag1 {
-  id: number;
-  tag: string;
-}
 
 export const SearchPosts = ()=>{
     const location = useLocation();
@@ -236,7 +207,7 @@ export const SearchPosts = ()=>{
     const [socialGraphData, setSocialGraphData] = useState<Map<string, User>>(new Map());
     const graphRef = useRef<SociaGraph | null>(null);
     const [followingStatus, setFollowingStatus] = useRecoilState(followingStatusAtom);
-    const[followingPosts,setFollowingPosts]=useState<Post1[]>([])
+   
     const [isLoading, setIsLoading] = useState(true);
     const [searchPosts,setsearchPosts]=useState<Post[]>([]);
     const [error, setError] = useState<string[]>([]);
@@ -245,10 +216,10 @@ export const SearchPosts = ()=>{
       setError(prevErrors => [...prevErrors, errorMessage]);
     };
 
-    const {posts,isLoading:postsLoading,error:postsError}=usePosts();
-    const {users,isLoading:usersLoading,error:usersError}=useUsers();
+    const {posts,error:postsError}=usePosts();
+    const {users,error:usersError}=useUsers();
     const {tags,isLoading:tagsLoading,error:tagsError}=useTags();
-    const [key,SetKey]=useState(0)
+    
 const [user,SetUser]=useState({
   id: "",
   email: "",
@@ -256,7 +227,7 @@ const [user,SetUser]=useState({
   savedPosts: []
 })
 
-const [Loadableuser,LoadableSetUser]=useRecoilStateLoadable(UserAtom);
+const [Loadableuser]=useRecoilStateLoadable(UserAtom);
 
 
 useEffect(() => {
@@ -288,10 +259,6 @@ useEffect(() => {
    
     function searchPostsfunc(){
         try {
-          interface Props1{
-            title:string;
-            id:string;
-          }
         
           if(searchTerm){
             const searchPostsLower = searchTerm.toLowerCase().replace(/\s+/g, '');
@@ -597,7 +564,7 @@ if (isLoading) {
         />
 
       </div>} */}
-      { searchPosts && searchPosts.map((post, index) => {
+      { searchPosts && searchPosts.map((post, _index) => {
         return <Posts
           key={post.id}
           post={post}

@@ -1,6 +1,4 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+
 import './App.css'
 
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
@@ -14,7 +12,7 @@ import { ExploreTags } from './pages/MoreTags'
 import { TagPosts } from './pages/TagPosts'
 import { SearchPosts } from './pages/searchPost'
 import { RecoilRoot } from 'recoil'
-import { Sidebar } from './components/Sidebar'
+
 import { MobileSideBar } from './pages/MobileSidebar'
 // import { Signin } from './pages/Signin'
 // import { Blog } from './pages/Blog'

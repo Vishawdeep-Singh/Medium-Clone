@@ -2,23 +2,6 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import { useRecoilValueLoadable, useRecoilState } from "recoil";
 import { PostsAtom, TagsAtom } from "../states/atoms";
-interface Post1 {
-    id: string;
-    title: string;
-    content: string;
-    published: boolean;
-    authorId: string;
-    date: string;
-    likes: number;
-    author: Author;
-    tags: Tag1[];
-    comments: any[]; 
-    savers: any[];
-  }
-  interface Tag1 {
-    id: number;
-    tag: string;
-  }
 
 
 interface Tag {
@@ -26,16 +9,6 @@ interface Tag {
     tag: string;
     post:Post[]
     
-  }
-  interface post{
-    id: string;
-    title: string;
-    content: string;
-    published: boolean;
-    authorId: string;
-    date: string;
-    likes: number;
-    author: Author
   }
   
   interface Author {
@@ -57,9 +30,6 @@ interface Tag {
     tags: Tag[];
     comments: any[]; 
     savers: any[];
-  }
-  interface Fills {
-    [key: string]: string;
   }
   interface Users{
     

@@ -1,39 +1,12 @@
 import axios from "axios";
 import { atom, selector } from "recoil";
 
-interface Post1 {
-    id: string;
-    title: string;
-    content: string;
-    published: boolean;
-    authorId: string;
-    date: string;
-    likes: number;
-    author: Author;
-    tags: Tag1[];
-    comments: any[]; 
-    savers: any[];
-  }
-  interface Tag1 {
-    id: number;
-    tag: string;
-  }
 
   interface Tag {
     id: number;
     tag: string;
     post:Post[]
     
-  }
-  interface post{
-    id: string;
-    title: string;
-    content: string;
-    published: boolean;
-    authorId: string;
-    date: string;
-    likes: number;
-    author: Author
   }
   
   interface Author {
@@ -56,24 +29,11 @@ interface Post1 {
     comments: any[]; 
     savers: any[];
   }
-  interface Fills {
-    [key: string]: string;
-  }
-  interface Users{
-        
-    id:string,
-    email:string,
-    name:string,
-    followedBy:[],
-    following:[]
-
-
-}
 export const UserAtom = atom({
     key:"userAtom",
     default: selector({
       key:"DefaultUser",
-      get: async({get})=>{
+      get: async()=>{
         
           try {
               
@@ -120,7 +80,7 @@ export const PostsAtom = atom<Post[]>({
     key:"postsAtom",
     default:selector({
         key:"PostAtomSelector",
-        get: async ({get})=>{
+        get: async ()=>{
             try {
                 const token:string | null = localStorage.getItem("token");
                 if(!token){

@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom"
 import { Appbar } from "../components/Appbar"
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { LoadingSpinner } from "./LoadingSpinner";
+
 import { useRecoilStateLoadable } from "recoil";
 import { UserAtom } from "../states/atoms";
 import ErrorDisplay from "./error";
@@ -63,7 +63,7 @@ export const BlogInfo = () => {
         savedPosts: []
       })
       
-      const [Loadableuser,LoadableSetUser]=useRecoilStateLoadable(UserAtom);
+      const [Loadableuser]=useRecoilStateLoadable(UserAtom);
       useEffect(() => {
         // Check the state of loadableUser to determine UI state
         switch (Loadableuser.state) {
@@ -495,7 +495,7 @@ if(error.length>0){
                 {comments.length===0 && <div>
                     No Responses
                     </div>}
-                {comments.length>0 && comments.map((comment,index)=>{
+                {comments.length>0 && comments.map((comment,_index)=>{
                     let paras:string[]=comment.content.split("\n")
                     return <div key={comment.id} className="border-b-[1px] space-y-5 flex flex-col border-gray w-[100%]">
                     <div className="flex items-center">

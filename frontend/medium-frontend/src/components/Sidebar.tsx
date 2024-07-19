@@ -4,23 +4,6 @@ import { ScaleLoader } from "react-spinners";
 import { GrayButton } from "./GrayButton";
 import { ProfileCompo } from "./Who_TO_Follow";
 
-interface Post1 {
-    id: string;
-    title: string;
-    content: string;
-    published: boolean;
-    authorId: string;
-    date: string;
-    likes: number;
-    author: Author;
-    tags: Tag1[];
-    comments: any[]; 
-    savers: any[];
-  }
-  interface Tag1 {
-    id: number;
-    tag: string;
-  }
 
 
 interface Tag {
@@ -28,16 +11,6 @@ interface Tag {
     tag: string;
     post:Post[]
     
-  }
-  interface post{
-    id: string;
-    title: string;
-    content: string;
-    published: boolean;
-    authorId: string;
-    date: string;
-    likes: number;
-    author: Author
   }
   
   interface Author {
@@ -59,9 +32,6 @@ interface Tag {
     tags: Tag[];
     comments: any[]; 
     savers: any[];
-  }
-  interface Fills {
-    [key: string]: string;
   }
   interface Users{
     
@@ -99,7 +69,7 @@ export const Sidebar:React.FC<SidebarProps> = ({ tags, tagsLoading, users, user,
             Recommended topics
             {tagsLoading && (
               <div className="flex items-center mt-12 justify-center">
-                <ScaleLoader color={color} loading={tagsLoading} size={40} aria-label="Loading Spinner" data-testid="loader" />
+                <ScaleLoader color={color} loading={tagsLoading}  aria-label="Loading Spinner" data-testid="loader" />
               </div>
             )}
             {!tagsLoading && (
