@@ -238,6 +238,9 @@ const addError = (errorMessage: string) => {
 
     })
 
+    const [savedPostsLoading,setSavedPostsLoading]=useState(false)
+  
+
     const [Loadableuser]=useRecoilStateLoadable(UserAtom);
     
     useEffect(() => {
@@ -247,8 +250,9 @@ const addError = (errorMessage: string) => {
             setIsLoading(true);
             break;
           case 'hasValue':
-            setIsLoading(false);
-            SetOwnerUser(Loadableuser.contents); // Set user data from Recoil state
+           
+            SetOwnerUser(Loadableuser.contents);
+            setIsLoading(false); // Set user data from Recoil state
             break;
           case 'hasError':
            addError(`Error loading user:, ${Loadableuser.contents.message}`);
@@ -318,7 +322,7 @@ const addError = (errorMessage: string) => {
     
 useEffect(()=>{
     if(userId===ownerUser.id){
-        
+       console.log(ownerUser)
             fetchUser1()
         
     }
@@ -373,13 +377,15 @@ useEffect(()=>{
     const fetchUser1 = async () => {
         try {
             
-            if (user) {
+            if (ownerUser) {
+                setSavedPostsLoading(true)
                  // Assuming response.data is an array of posts
                 SetPosts(ownerUser.posts);
                 
                 setSavedPosts(ownerUser.savedPosts)
-                setIsLoading(false);
+                
                 setWhoseInfo("owner")
+                setSavedPostsLoading(false);
 
 
             } else {
@@ -413,7 +419,7 @@ const[followers,setFollowers]=useState<number|undefined>()
 
 
     
-if (isLoading) {
+if (isLoading || savedPostsLoading) {
     return <div className="flex justify-center items-center h-lvh">
        <GridLoader
 color={"#000000"}
@@ -433,7 +439,7 @@ data-testid="loader"
     
         </div>
       }
-      
+
 
 
     return <div>
@@ -637,7 +643,7 @@ data-testid="loader"
                                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z" />
                                  </svg>
                                  <div className="text-sm md:text-lg">
-                                 {post.comments.length}
+                                 {post.comments?.length}
                                  </div>
  
                              </div>
